@@ -3,7 +3,7 @@ package com.example.santa.domain.challege.service;
 import com.example.santa.domain.challege.dto.ChallengeCreateDto;
 import com.example.santa.domain.challege.dto.ChallengeResponseDto;
 import com.example.santa.domain.challege.entity.Challenge;
-import com.example.santa.domain.challege.mapper.ChallengeMapper;
+import com.example.santa.global.util.mapsturct.ChallengeResponseMapper;
 import com.example.santa.domain.challege.repository.ChallengeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15,12 +15,12 @@ import java.util.List;
 public class ChallengeServiceImpl implements ChallengeService{
 
     private final ChallengeRepository challengeRepository;
-    private final ChallengeMapper challengeMapper;
+    private final ChallengeResponseMapper challengeResponseMapper;
 
     @Autowired
-    public ChallengeServiceImpl(ChallengeRepository challengeRepository, ChallengeMapper challengeMapper) {
+    public ChallengeServiceImpl(ChallengeRepository challengeRepository, ChallengeResponseMapper challengeResponseMapper) {
         this.challengeRepository = challengeRepository;
-        this.challengeMapper = challengeMapper;
+        this.challengeResponseMapper = challengeResponseMapper;
     }
 
 
@@ -34,7 +34,7 @@ public class ChallengeServiceImpl implements ChallengeService{
                 .clearStandard(challengeCreateDto.getClearStandard())
                 .image(challengeCreateDto.getImage())
                 .build());
-        return challengeMapper.entityToDto(save);
+        return challengeResponseMapper.toDto(save);
     }
 
 //    @Override
@@ -55,7 +55,7 @@ public class ChallengeServiceImpl implements ChallengeService{
     @Override
     public ChallengeResponseDto findChallengeById(Long id) {
         return challengeRepository.findById(id)
-                .map(challengeMapper::entityToDto)
+                .map(challengeResponseMapper::toDto)
                 .orElse(null);
     }
 
@@ -70,7 +70,7 @@ public class ChallengeServiceImpl implements ChallengeService{
             challenge.setImage(challengeCreateDto.getImage());
             challenge.setClearStandard(challengeCreateDto.getClearStandard());
             challenge = challengeRepository.save(challenge);
-            result = challengeMapper.entityToDto(challenge);
+            result = challengeResponseMapper.toDto(challenge);
         }
         return result;
     }

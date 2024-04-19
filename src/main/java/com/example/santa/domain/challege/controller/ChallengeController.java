@@ -37,12 +37,12 @@ public class ChallengeController {
     }
 
     @PatchMapping("/{id}")
-    public ChallengeResponseDto updateChallenge(@PathVariable Long id, @RequestBody ChallengeCreateDto challengeCreateDto) {
+    public ChallengeResponseDto updateChallenge(@PathVariable(name = "id") Long id, @RequestBody ChallengeCreateDto challengeCreateDto) {
         return challengeService.updateChallenge(id, challengeCreateDto);
     }
 
     @DeleteMapping("/{id}")
-    public void deleteChallenge(@PathVariable Long id) {
+    public void deleteChallenge(@PathVariable(name = "id") Long id) {
         challengeService.deleteChallenge(id);
     }
 }
