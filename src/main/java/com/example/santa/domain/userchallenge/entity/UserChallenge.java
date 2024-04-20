@@ -1,4 +1,4 @@
-package com.example.santa.userchallenge.entity;
+package com.example.santa.domain.userchallenge.entity;
 
 import com.example.santa.domain.challege.entity.Challenge;
 import jakarta.persistence.*;

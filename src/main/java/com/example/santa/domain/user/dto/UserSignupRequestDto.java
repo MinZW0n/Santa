@@ -1,14 +1,11 @@
-package com.example.santa.domain.user.dto.request;
+package com.example.santa.domain.user.dto;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
-@Getter
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-@Builder
-@AllArgsConstructor
-public class UserSignupRequest {
+@Data
+public class UserSignupRequestDto {
     @Email
     private String email;
     @NotBlank

@@ -2,10 +2,7 @@ package com.example.santa.domain.user.entity;
 
 import com.example.santa.domain.common.BaseEntity;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -26,7 +23,7 @@ public class User extends BaseEntity {
 
     private String phoneNumber;
 
-    private String picture;
+    private String image;
 
     @Enumerated(EnumType.STRING)
     private Role role;
@@ -41,4 +38,11 @@ public class User extends BaseEntity {
         this.role = role;
     }
 
+    public User update(String name, String nickname, String phoneNumber, String image) {
+        this.name = name;
+        this.nickname = nickname;
+        this.phoneNumber = phoneNumber;
+        this.image = image;
+        return this;
+    }
 }

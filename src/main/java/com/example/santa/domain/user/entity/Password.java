@@ -24,9 +24,13 @@ public class Password {
     }
 
     public void changePassword(final String oldRawPassword, final String newRawPassword) {
-        if (isMatches(oldRawPassword)) {
-            this.encodePassword = encodePassword(newRawPassword);
+        if (!isMatches(oldRawPassword)) {
+            throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
+        } else if (isMatches(newRawPassword)) {
+            throw new IllegalArgumentException("기존 비밀번호로는 변경할 수 없습니다..");
         }
+        this.encodePassword = encodePassword(newRawPassword);
+
     }
 
     private boolean isMatches(String rawPassword) {

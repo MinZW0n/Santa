@@ -1,6 +1,6 @@
-package com.example.santa.userchallenge.repository;
+package com.example.santa.domain.userchallenge.repository;
 
-import com.example.santa.userchallenge.entity.UserChallenge;
+import com.example.santa.domain.userchallenge.entity.UserChallenge;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
