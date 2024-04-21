@@ -2,8 +2,6 @@ package com.example.santa.domain.category.service;
 
 import com.example.santa.domain.category.entity.Category;
 import com.example.santa.domain.category.repository.CategoryRepository;
-import com.example.santa.global.exception.ExceptionCode;
-import com.example.santa.global.exception.ServiceLogicException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -18,12 +16,12 @@ public class CategoryService {
         this.categoryRepository = categoryRepository;
     }
 
-    public Category createCategory(String name) {
+    public Category createCategory(String name) throws Exception {
         // 이름으로 카테고리 검색
         Optional<Category> existingCategory = categoryRepository.findByName(name);
         if (existingCategory.isPresent()) {
             // 중복된 이름이 있으면 예외 발생
-            throw new ServiceLogicException(ExceptionCode.CATEGORY_ALREADY_EXISTS);
+            throw new Exception("이미 존재하는 카테고리 입니다.");
         }
         Category category = new Category();
         category.setName(name);
@@ -34,15 +32,15 @@ public class CategoryService {
         return categoryRepository.findAll();
     }
 
-    public Category updateCategory(Long id, String name) {
+    public Category updateCategory(Long id, String name) throws Exception {
         // 이름으로 카테고리 검색
         Optional<Category> existingCategory = categoryRepository.findByName(name);
         if (existingCategory.isPresent()) {
             // 중복된 이름이 있으면 예외 발생
-            throw new ServiceLogicException(ExceptionCode.CATEGORY_ALREADY_EXISTS);
+            throw new Exception("이미 존재하는 카테고리 입니다.");
         }
         Category category = categoryRepository.findById(id)
-                .orElseThrow(() -> new ServiceLogicException(ExceptionCode.CATEGORY_NOT_FOUND));
+                .orElseThrow(() -> new IllegalArgumentException("Invalid category ID: " + id));
         category.setName(name);
         return categoryRepository.save(category);
     }
