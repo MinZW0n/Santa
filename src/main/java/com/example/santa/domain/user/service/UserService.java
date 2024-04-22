@@ -1,8 +1,11 @@
 package com.example.santa.domain.user.service;
 
 import com.example.santa.domain.user.dto.UserResponseDto;
+import com.example.santa.domain.user.dto.UserSignInRequestDto;
 import com.example.santa.domain.user.dto.UserSignupRequestDto;
 import com.example.santa.domain.user.dto.UserUpdateRequestDto;
+import com.example.santa.domain.user.entity.Password;
+import com.example.santa.global.security.jwt.JwtToken;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -12,7 +15,8 @@ public interface UserService {
     // duplicate
     Boolean checkEmailDuplicate(String email);
     Boolean checkNicknameDuplicate(String nickname);
-
+    // login
+    JwtToken signIn(UserSignInRequestDto userSignInRequestDto);
     // read
     UserResponseDto findUserById(Long id);
 

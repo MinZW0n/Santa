@@ -1,10 +1,8 @@
 package com.example.santa.domain.user.controller;
 
-import com.example.santa.domain.user.dto.PasswordChangeRequestDto;
-import com.example.santa.domain.user.dto.UserResponseDto;
-import com.example.santa.domain.user.dto.UserSignupRequestDto;
-import com.example.santa.domain.user.dto.UserUpdateRequestDto;
+import com.example.santa.domain.user.dto.*;
 import com.example.santa.domain.user.service.UserService;
+import com.example.santa.global.security.jwt.JwtToken;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -16,6 +14,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 @RequestMapping("/api/users")
@@ -29,10 +29,26 @@ public class UserController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "성공", content = @Content(schema = @Schema(implementation = Long.class))),
             @ApiResponse(responseCode = "500", description = "에러", content = @Content(schema = @Schema(implementation = Long.class)))})
-    public ResponseEntity<Long> signup(@RequestBody @Valid UserSignupRequestDto request) {
-        Long signup = userService.signup(request);
+    public ResponseEntity<Long> signup(@RequestBody @Valid UserSignupRequestDto userSignupRequestDto) {
+        Long signup = userService.signup(userSignupRequestDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(signup);
     }
+
+    @PostMapping("/sign-in")
+    @Operation(summary = "로그인", description = "로그인")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = JwtToken.class))),
+            @ApiResponse(responseCode = "500", description = "에러", content = @Content(schema = @Schema(implementation = JwtToken.class)))})
+    public ResponseEntity<JwtToken> signIn(@RequestBody @Valid UserSignInRequestDto userSignInRequestDto) {
+        JwtToken jwtToken = userService.signIn(userSignInRequestDto);
+        return ResponseEntity.status(HttpStatus.ACCEPTED).body(jwtToken);
+    }
+
+    @GetMapping("/checkToken")
+    public String checkToken(@AuthenticationPrincipal UserDetails userDetails) {
+        return userDetails.getUsername();
+    }
+
 
     @PostMapping("/duplicate/email")
     @Operation(summary = "이메일 중복 확인", description = "이메일 중복 확인")
@@ -85,16 +101,16 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK).body(updateUser);
     }
 
-    @PatchMapping("/password/{id}")
-    @Operation(summary = "비밀번호 수정", description = "비밀번호 수정")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description = "성공", content = @Content(schema = @Schema(implementation = Long.class))),
-            @ApiResponse(responseCode = "500", description = "에러", content = @Content(schema = @Schema(implementation = Long.class)))})
-    public ResponseEntity<Long> changePassword(@PathVariable(name = "id") Long id, @RequestBody @Valid PasswordChangeRequestDto passwordChangeRequestDto) {
-        Long changePassword = userService.changePassword(id
-                , passwordChangeRequestDto.getOldPassword(), passwordChangeRequestDto.getNewPassword());
-        return ResponseEntity.status(HttpStatus.OK).body(changePassword);
-    }
+//    @PatchMapping("/password/{id}")
+//    @Operation(summary = "비밀번호 수정", description = "비밀번호 수정")
+//    @ApiResponses(value = {
+//            @ApiResponse(responseCode = "201", description = "성공", content = @Content(schema = @Schema(implementation = Long.class))),
+//            @ApiResponse(responseCode = "500", description = "에러", content = @Content(schema = @Schema(implementation = Long.class)))})
+//    public ResponseEntity<Long> changePassword(@PathVariable(name = "id") Long id, @RequestBody @Valid PasswordChangeRequestDto passwordChangeRequestDto) {
+//        Long changePassword = userService.changePassword(id
+//                , passwordChangeRequestDto.getOldPassword(), passwordChangeRequestDto.getNewPassword());
+//        return ResponseEntity.status(HttpStatus.OK).body(changePassword);
+//    }
 
 
 }

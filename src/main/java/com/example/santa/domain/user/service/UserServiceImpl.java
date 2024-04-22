@@ -1,27 +1,38 @@
 package com.example.santa.domain.user.service;
 
 import com.example.santa.domain.user.dto.UserResponseDto;
+import com.example.santa.domain.user.dto.UserSignInRequestDto;
 import com.example.santa.domain.user.dto.UserSignupRequestDto;
 import com.example.santa.domain.user.dto.UserUpdateRequestDto;
 import com.example.santa.domain.user.entity.Password;
 import com.example.santa.domain.user.entity.Role;
 import com.example.santa.domain.user.entity.User;
 import com.example.santa.domain.user.repository.UserRepository;
+import com.example.santa.global.security.jwt.JwtToken;
+import com.example.santa.global.security.jwt.JwtTokenProvider;
 import com.example.santa.global.util.mapsturct.UserResponseDtoMapper;
 import jakarta.persistence.EntityExistsException;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-@Transactional
+import java.util.List;
+
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 @Service
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final UserResponseDtoMapper userResponseDtoMapper;
+    private final AuthenticationManagerBuilder authenticationManagerBuilder;
+    private final JwtTokenProvider jwtTokenProvider;
 
+    @Transactional
     @Override
     public Long signup(UserSignupRequestDto request) {
         if (userRepository.existsByEmail(request.getEmail())) {
@@ -60,6 +71,22 @@ public class UserServiceImpl implements UserService {
         return true;
     }
 
+    /*
+     * email + password 를 받아서 Authentication 객체 생성
+     * authenticate 메서드 를 사용해서 User 검증 -> 이때 만들어 놓은 loadUserByUsername 메서드가 실행 됨
+     * 검증 성공하면 Authentication 객체를 기반으로 JWT 토큰 생성
+     * */
+    @Transactional
+    @Override
+    public JwtToken signIn(UserSignInRequestDto userSignInRequestDto) {
+        UsernamePasswordAuthenticationToken authenticationToken
+                = new UsernamePasswordAuthenticationToken(userSignInRequestDto.getEmail(), userSignInRequestDto.getPassword());
+        authenticationManagerBuilder.getObject().authenticate(authenticationToken);
+//        User user = userRepository.findByEmail(userSignInRequestDto.getEmail()).orElseThrow();
+        JwtToken jwtToken = jwtTokenProvider.generateToken(authenticationToken);
+        return jwtToken;
+    }
+
     @Override
     public UserResponseDto findUserById(Long id) {
         User user = userRepository.findById(id)
@@ -73,6 +100,7 @@ public class UserServiceImpl implements UserService {
     public Page<UserResponseDto> findAllUser(Pageable pageable) {
         return userRepository.findAll(pageable).map(userResponseDtoMapper::toDto);
     }
+
 
     @Override
     public UserResponseDto updateUser(Long id, UserUpdateRequestDto userUpdateRequestDto) {
@@ -93,8 +121,7 @@ public class UserServiceImpl implements UserService {
     public Long changePassword(Long id, String oldPassword, String newPassword) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("해당 유저가 없습니다. userId=" + id));
-        user.getPassword().changePassword(oldPassword, newPassword);
+        user.getPasswordForChange().changePassword(oldPassword, newPassword);
         return user.getId();
     }
-
 }
