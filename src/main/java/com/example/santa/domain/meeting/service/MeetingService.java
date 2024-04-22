@@ -14,6 +14,9 @@ import com.example.santa.domain.meeting.repository.ParticipantRepository;
 import com.example.santa.domain.meeting.repository.TagRepository;
 import com.example.santa.domain.user.entity.User;
 import com.example.santa.domain.user.repository.UserRepository;
+import com.example.santa.global.exception.ExceptionCode;
+import com.example.santa.global.exception.ServiceLogicException;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -43,9 +46,9 @@ public class MeetingService {
 
     public MeetingDto createMeeting(MeetingDto meetingDto){
         Category category = categoryRepository.findByName(meetingDto.getCategoryName())
-                .orElseThrow(() -> new IllegalArgumentException("카테고리를 찾을 수 없습니다."));
+                .orElseThrow(() -> new ServiceLogicException(ExceptionCode.CATEGORY_NOT_FOUND));
         User leader = userRepository.findById(meetingDto.getLeaderId())
-                .orElseThrow(() -> new IllegalArgumentException("유저를 찾을 수 없습니다."));
+                .orElseThrow(() -> new ServiceLogicException(ExceptionCode.USER_NOT_FOUND));
 
 
         Meeting meeting = Meeting.builder()
@@ -94,8 +97,94 @@ public class MeetingService {
 
     public MeetingDto meetingDetail(Long id){
         Meeting meeting = meetingRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("모임을 찾을 수 없습니다."));
+                .orElseThrow(() -> new ServiceLogicException(ExceptionCode.MEETING_NOT_FOUND));
         return convertToDto(meeting);
+    }
+
+    public Participant joinMeeting(Long id, Long userId) {
+        Meeting meeting = meetingRepository.findById(id)
+                .orElseThrow(() -> new ServiceLogicException(ExceptionCode.MEETING_NOT_FOUND));
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ServiceLogicException(ExceptionCode.USER_NOT_FOUND));
+
+        // 이미 참여중인지 확인
+        boolean isAlreadyParticipant = meeting.getParticipant().stream()
+                .anyMatch(participant -> participant.getUser().getId().equals(userId));
+
+        if (isAlreadyParticipant) {
+            // 이미 참여중인 경우 예외 발생 또는 적절한 처리
+            throw new ServiceLogicException(ExceptionCode.ALREADY_PARTICIPATING);
+        }
+
+        Participant participant = Participant.builder()
+                .user(user)
+                .meeting(meeting)
+                .isLeader(false)
+                .build();
+        List<Participant> participants = meeting.getParticipant();
+        participants.add(participantRepository.save(participant));
+
+        return participant;
+    }
+
+    public List<MeetingDto> getAllMeetings(){
+
+        List<Meeting> meetings = meetingRepository.findAll();
+        return meetings.stream().map(this::convertToDto).collect(Collectors.toList());
+
+    }
+
+    @Transactional
+    public MeetingDto updateMeeting(Long id, MeetingDto meetingDto) {
+        Meeting meeting = meetingRepository.findById(id)
+                .orElseThrow(() -> new ServiceLogicException(ExceptionCode.MEETING_NOT_FOUND));
+        Category category = categoryRepository.findByName(meetingDto.getCategoryName())
+                .orElseThrow(() -> new ServiceLogicException(ExceptionCode.CATEGORY_NOT_FOUND));
+
+        meeting.setMeetingName(meetingDto.getMeetingName());
+        meeting.setCategory(category);
+        meeting.setMountainName(meetingDto.getMountainName());
+        meeting.setDescription(meetingDto.getDescription());
+        meeting.setHeadcount(meetingDto.getHeadcount());
+        meeting.setDate(meetingDto.getDate());
+        meeting.setImage(meeting.getImage());
+
+        meetingRepository.save(meeting);
+
+        Set<MeetingTag> meetingTags = new HashSet<>();
+        meetingTagRepository.deleteByMeeting(meeting);
+        for (String tagName : meetingDto.getTags()) {
+            Tag tag = tagRepository.findByName(tagName)
+                    .orElseGet(() -> tagRepository.save(Tag.builder()
+                            .name(tagName)
+                            .build()));
+            MeetingTag meetingTag = MeetingTag.builder()
+                    .tag(tag)
+                    .meeting(meeting)
+                    .build();
+            meetingTags.add(meetingTagRepository.save(meetingTag));
+        }
+
+        meeting.setMeetingTags(meetingTags);
+
+        return convertToDto(meetingRepository.save(meeting));
+    }
+
+    public void deleteMeeting(Long id) {
+        if (!meetingRepository.existsById(id)) {
+            throw new ServiceLogicException(ExceptionCode.MEETING_NOT_FOUND);
+        }
+        meetingRepository.deleteById(id);
+    }
+
+    public List<MeetingDto> findMeetingsByTagName(String tagName) {
+        List<Meeting> meetings = meetingRepository.findByTagName(tagName);
+        return meetings.stream().map(this::convertToDto).collect(Collectors.toList());
+    }
+
+    public List<MeetingDto> getMeetingsByCategoryName(String categoryName) {
+        List<Meeting> meetings = meetingRepository.findByCategory_Name(categoryName);
+        return meetings.stream().map(this::convertToDto).collect(Collectors.toList());
     }
 
     public MeetingDto convertToDto(Meeting meeting) {
