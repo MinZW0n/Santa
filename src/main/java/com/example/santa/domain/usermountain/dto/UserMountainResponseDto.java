@@ -16,6 +16,7 @@ public class UserMountainResponseDto {
     private Long userId;
     private Long mountainName;
     private String mountainLocation;
+    private Double userAccumulatedHeight;
     private Double latitude;
     private Double longitude;
 }

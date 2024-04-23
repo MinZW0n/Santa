@@ -7,6 +7,7 @@ import com.example.santa.domain.mountain.repository.MountainRepository;
 import com.example.santa.domain.user.entity.User;
 import com.example.santa.domain.user.repository.UserRepository;
 import com.example.santa.domain.usermountain.dto.UserMountainResponseDto;
+import com.example.santa.domain.usermountain.dto.UserMountainVerifyRequestDto;
 import com.example.santa.domain.usermountain.dto.UserMountainVerifyResponseDto;
 import com.example.santa.domain.usermountain.entity.UserMountain;
 import com.example.santa.domain.usermountain.repository.UserMountainRepository;
@@ -60,6 +61,44 @@ public class UserMountainServiceImpl implements UserMountainService {
                     .category(category)
                     .build();
             UserMountain savedUserMountain = userMountainRepository.save(userMountain);
+            return userMountainResponseDtoMapper.toDto(savedUserMountain);
+        } else {
+            throw new IllegalArgumentException("인증에 실패하셨습니다.");
+        }
+    }
+
+    //오류발생  java.lang.RuntimeException: 유저를 찾을 수 없습니다.
+    @Override
+    public UserMountainResponseDto verifyAndCreateUserMountain1(UserMountainVerifyRequestDto userMountainVerifyRequestDto) {
+        System.out.println(userMountainVerifyRequestDto.getUserEmail());
+        System.out.println(userMountainVerifyRequestDto.getLongitude());
+        User user = userRepository.findByEmail(userMountainVerifyRequestDto.getUserEmail()).orElseThrow(() -> new RuntimeException("유저를 찾을 수 없습니다."));
+        Category category = categoryRepository.findById(userMountainVerifyRequestDto.getCategoryId()).orElseThrow(() -> new RuntimeException("등록되지 않은 카테고리입니다."));
+        double distance = 0.05;
+        Optional<Mountain> optionalMountain = mountainRepository.findMountainsWithinDistance(userMountainVerifyRequestDto.getLatitude(),userMountainVerifyRequestDto.getLongitude() , distance);
+
+//        // 기타 카테고리 인지 확인
+//        if (!"기타".equals(category.getName())) {
+//            throw new IllegalArgumentException("기타 카테고리가 아닙니다?");
+//        }
+
+        if (optionalMountain.isPresent()) {
+            Mountain mountain = optionalMountain.get();
+            UserMountain userMountain = UserMountain.builder()
+                    .latitude(userMountainVerifyRequestDto.getLatitude())
+                    .longitude(userMountainVerifyRequestDto.getLongitude())
+                    .climbDate(userMountainVerifyRequestDto.getClimbDate())
+                    .mountain(mountain)
+                    .user(user)
+                    .category(category)
+                    .build();
+            UserMountain savedUserMountain = userMountainRepository.save(userMountain);
+
+            // 누적 높이
+            double newAccumulatedHeight = user.getAccumulatedHeight() + mountain.getHeight();
+            user.setAccumulatedHeight(newAccumulatedHeight);
+            userRepository.save(user); //user엔티티에 저장해도되나?
+
             return userMountainResponseDtoMapper.toDto(savedUserMountain);
         } else {
             throw new IllegalArgumentException("인증에 실패하셨습니다.");

@@ -12,6 +12,7 @@ import java.util.Collection;
 import java.util.List;
 
 @Getter
+@Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 public class User extends BaseEntity implements UserDetails {
@@ -35,6 +36,9 @@ public class User extends BaseEntity implements UserDetails {
 
     @Enumerated(EnumType.STRING)
     private Role role;
+
+    //누적 높이 저장
+    private double accumulatedHeight;
 
     @Builder
     public User(String email, Password password, String name, String nickname, String phoneNumber, Role role) {

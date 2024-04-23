@@ -16,6 +16,7 @@ public class UserMountainVerifyResponseDto {
     private Long userId;
     private String mountainName;
     private String mountainLocation;
+    private Double userAccumulatedHeight;
     private Date climbDate;
     private String location;
     private Double latitude;

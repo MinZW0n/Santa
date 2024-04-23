@@ -1,5 +1,6 @@
 package com.example.santa.domain.usermountain.controller;
 
+import com.example.santa.domain.challege.dto.ChallengeResponseDto;
 import com.example.santa.domain.mountain.entity.Mountain;
 import com.example.santa.domain.usermountain.dto.UserMountainRequestDto;
 import com.example.santa.domain.usermountain.dto.UserMountainResponseDto;
@@ -7,7 +8,12 @@ import com.example.santa.domain.usermountain.dto.UserMountainVerifyRequestDto;
 import com.example.santa.domain.usermountain.dto.UserMountainVerifyResponseDto;
 import com.example.santa.domain.usermountain.entity.UserMountain;
 import com.example.santa.domain.usermountain.service.UserMountainServiceImpl;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,40 +34,32 @@ public class UserMountainController {
     }
 
 
-//    @PostMapping
-//    public ResponseEntity<UserMountainResponseDto> createUserMountain(@RequestBody UserMountainRequestDto request) {
-//        UserMountainResponseDto userMountainResponseDto = userMountainServiceImpl.verify2(request.getUserId(), request.getMountainId(), request.getLatitude(), request.getLongitude());
-//        return ResponseEntity.ok(userMountainResponseDto);
-//    }
-
-
+    @Operation(summary = "유저 마운틴 등록기능", description = "유저 마운틴 등록")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation =ChallengeResponseDto.class))),
+            @ApiResponse(responseCode = "500", description = "에러", content = @Content(schema = @Schema(implementation = ChallengeResponseDto.class)))})
     @PostMapping
     public ResponseEntity<UserMountainResponseDto> createUserMountain(@RequestBody UserMountainVerifyRequestDto request) {
-        UserMountainResponseDto userMountains = userMountainServiceImpl.verifyAndCreateUserMountain(
-                    request.getLatitude(),
-                    request.getLongitude(),
-                    request.getClimbDate(),
-                    request.getUserEmail(),
-                    request.getCategoryId()
-            );
+        UserMountainResponseDto userMountains = userMountainServiceImpl.verifyAndCreateUserMountain1(request);
+
 //            return new ResponseEntity<>(userMountains, HttpStatus.CREATED);
-            return ResponseEntity.ok(userMountains);
+        return ResponseEntity.ok(userMountains);
     }
 
-    @PostMapping("/test")
-    public ResponseEntity<Mountain> create(@RequestParam double latitude, @RequestParam double longitude){
-       Mountain userMountainRequestDto = userMountainServiceImpl.test(latitude,longitude);
-        return ResponseEntity.ok(userMountainRequestDto);
-    }
-
-    // GET endpoint for all UserMountains
+    @Operation(summary = "유저 마운틴 조회 기능", description = "전체 유저 마운틴 조회")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = ChallengeResponseDto.class))),
+            @ApiResponse(responseCode = "500", description = "에러", content = @Content(schema = @Schema(implementation = ChallengeResponseDto.class)))})
     @GetMapping
     public ResponseEntity<List<UserMountainResponseDto>> getAllUserMountains() {
         List<UserMountainResponseDto> userMountains = userMountainServiceImpl.getAllUserMountains();
         return ResponseEntity.ok(userMountains);
     }
 
-    // GET endpoint for a single UserMountain
+    @Operation(summary = "유저 마운틴 개별 조회 기능", description = "유저 마운틴 고유 id로 조회")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = ChallengeResponseDto.class))),
+            @ApiResponse(responseCode = "500", description = "에러", content = @Content(schema = @Schema(implementation = ChallengeResponseDto.class)))})
     @GetMapping("/{id}")
     public ResponseEntity<UserMountainResponseDto> getUserMountainById(@PathVariable Long id) {
         UserMountainResponseDto userMountainDTO = userMountainServiceImpl.getUserMountainById(id);
@@ -70,6 +68,28 @@ public class UserMountainController {
 
 
 }
+
+
+//    @PostMapping
+//    public ResponseEntity<UserMountainResponseDto> createUserMountain(@RequestBody UserMountainRequestDto request) {
+//        UserMountainResponseDto userMountainResponseDto = userMountainServiceImpl.verify2(request.getUserId(), request.getMountainId(), request.getLatitude(), request.getLongitude());
+//        return ResponseEntity.ok(userMountainResponseDto);
+//    }
+
+
+//    @PostMapping
+//    public ResponseEntity<UserMountainResponseDto> createUserMountain(@RequestBody UserMountainVerifyRequestDto request) {
+//        UserMountainResponseDto userMountains = userMountainServiceImpl.verifyAndCreateUserMountain1(
+//                    request.getLatitude(),
+//                    request.getLongitude(),
+//                    request.getClimbDate(),
+//                    request.getUserEmail(),
+//                    request.getCategoryId()
+//            );
+////            return new ResponseEntity<>(userMountains, HttpStatus.CREATED);
+//            return ResponseEntity.ok(userMountains);
+//    }
+
 
 
 //    @PostMapping
