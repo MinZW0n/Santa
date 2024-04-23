@@ -135,7 +135,7 @@ public class MeetingService {
             }
         }
 
-        // ParticipantDto 리스트를 MeetingDto 객체의 participants로 설정합니다.
+        // ParticipantDto 리스트를 MeetingDto 객체의 participants로 설정합니다
         meetingDto.setParticipants(participantDtoList);
 
         return meetingDto;
