@@ -1,5 +1,7 @@
 package com.example.santa.domain.challege.service;
 
+import com.example.santa.domain.category.entity.Category;
+import com.example.santa.domain.category.repository.CategoryRepository;
 import com.example.santa.domain.challege.dto.ChallengeCreateDto;
 import com.example.santa.domain.challege.dto.ChallengeResponseDto;
 import com.example.santa.domain.challege.entity.Challenge;
@@ -8,6 +10,8 @@ import com.example.santa.domain.user.repository.UserRepository;
 import com.example.santa.domain.userchallenge.dto.UserChallengeResponseDto;
 import com.example.santa.domain.userchallenge.entity.UserChallenge;
 import com.example.santa.domain.userchallenge.repository.UserChallengeRepository;
+import com.example.santa.global.exception.ExceptionCode;
+import com.example.santa.global.exception.ServiceLogicException;
 import com.example.santa.global.util.mapsturct.ChallengeResponseMapper;
 import com.example.santa.domain.challege.repository.ChallengeRepository;
 import com.example.santa.global.util.mapsturct.UserChallengeResponseMapper;
@@ -34,11 +38,14 @@ public class ChallengeServiceImpl implements ChallengeService{
 
     private final UserChallengeRepository userChallengeRepository;
 
+    private final CategoryRepository categoryRepository;
+
     @Autowired
-    public ChallengeServiceImpl(ChallengeRepository challengeRepository, UserChallengeRepository userChallengeRepository, UserRepository userRepository, ChallengeResponseMapper challengeResponseMapper, UserChallengeResponseMapper userChallengeResponseMapper) {
+    public ChallengeServiceImpl(ChallengeRepository challengeRepository, UserChallengeRepository userChallengeRepository, UserRepository userRepository, CategoryRepository categoryRepository,ChallengeResponseMapper challengeResponseMapper, UserChallengeResponseMapper userChallengeResponseMapper) {
         this.challengeRepository = challengeRepository;
         this.userChallengeRepository = userChallengeRepository;
         this.userRepository = userRepository;
+        this.categoryRepository = categoryRepository;
         this.challengeResponseMapper = challengeResponseMapper;
         this.userChallengeResponseMapper = userChallengeResponseMapper;
     }
@@ -48,7 +55,11 @@ public class ChallengeServiceImpl implements ChallengeService{
     @Transactional
     @Override
     public ChallengeResponseDto saveChallenge(ChallengeCreateDto challengeCreateDto) {
+        Category category = categoryRepository.findById(challengeCreateDto.getCategoryId())
+                .orElseThrow(() -> new ServiceLogicException(ExceptionCode.CATEGORY_NOT_FOUND));
+
         Challenge save = challengeRepository.save(Challenge.builder()
+                .category(category)
                 .name(challengeCreateDto.getName())
                 .description(challengeCreateDto.getDescription())
                 .clearStandard(challengeCreateDto.getClearStandard())

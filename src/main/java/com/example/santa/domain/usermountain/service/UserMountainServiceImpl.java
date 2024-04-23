@@ -41,11 +41,13 @@ public class UserMountainServiceImpl implements UserMountainService {
     //산 인증
     @Override
     @Transactional
-    public UserMountainResponseDto verifyAndCreateUserMountain(double latitude, double longitude, Date climbDate, Long userId, Long categoryId) {
-        User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("유저를 찾을 수 없습니다."));
+    public UserMountainResponseDto verifyAndCreateUserMountain(double latitude, double longitude, Date climbDate, String userEmail, Long categoryId) {
+        User user = userRepository.findByEmail(userEmail).orElseThrow(() -> new RuntimeException("유저를 찾을 수 없습니다."));
+        System.out.println(user.getEmail());
         Category category = categoryRepository.findById(categoryId).orElseThrow(() -> new RuntimeException("등록되지 않은 카테고리입니다."));
         double distance = 0.05;
         Optional<Mountain> optionalMountain = mountainRepository.findMountainsWithinDistance(latitude, longitude, distance);
+
 
         if (optionalMountain.isPresent()) {
             Mountain mountain = optionalMountain.get();

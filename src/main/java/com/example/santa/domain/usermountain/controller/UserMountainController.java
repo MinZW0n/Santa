@@ -41,7 +41,7 @@ public class UserMountainController {
                     request.getLatitude(),
                     request.getLongitude(),
                     request.getClimbDate(),
-                    request.getUserId(),
+                    request.getUserEmail(),
                     request.getCategoryId()
             );
 //            return new ResponseEntity<>(userMountains, HttpStatus.CREATED);

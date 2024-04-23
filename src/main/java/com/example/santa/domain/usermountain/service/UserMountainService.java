@@ -10,7 +10,7 @@ public interface UserMountainService {
 
     Mountain test(double latitude, double longitude);
 
-    UserMountainResponseDto verifyAndCreateUserMountain(double latitude, double longitude, Date climbDate, Long userId, Long categoryId);
+    UserMountainResponseDto verifyAndCreateUserMountain(double latitude, double longitude, Date climbDate, String userEmail, Long categoryId);
 
     List<UserMountainResponseDto> getAllUserMountains();
 

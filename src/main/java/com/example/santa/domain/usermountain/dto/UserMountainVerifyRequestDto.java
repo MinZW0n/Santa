@@ -13,7 +13,7 @@ import java.util.Date;
 @NoArgsConstructor
 public class UserMountainVerifyRequestDto {
 
-    private Long userId;
+    private String userEmail;
     private Long categoryId;
     private Date climbDate;
     private double latitude;

@@ -21,7 +21,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/challenges")
 public class ChallengeController {
@@ -29,10 +28,10 @@ public class ChallengeController {
 
     private final ChallengeService challengeService;
 
-//    @Autowired
-//    public ChallengeController(ChallengeService challengeService) {
-//        this.challengeService = challengeService;
-//    }
+    @Autowired
+    public ChallengeController(ChallengeService challengeService) {
+        this.challengeService = challengeService;
+    }
 
     @Operation(summary = "챌린지 조회 기능", description = "전체 챌린지 조회")
     @ApiResponses(value = {

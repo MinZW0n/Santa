@@ -1,8 +1,15 @@
 package com.example.santa.domain.challege.entity;
 
+import com.example.santa.domain.category.entity.Category;
 import com.example.santa.domain.common.BaseEntity;
+import com.example.santa.domain.meeting.entity.MeetingTag;
+import com.example.santa.domain.user.entity.User;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.util.HashSet;
+import java.util.Set;
 
 @Getter
 @NoArgsConstructor
@@ -28,6 +35,9 @@ public class Challenge extends BaseEntity {
     @Column
     private Integer clearStandard;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "category_id")
+    private Category category;
 
 
 }
