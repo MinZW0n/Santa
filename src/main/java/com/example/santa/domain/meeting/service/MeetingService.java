@@ -3,6 +3,7 @@ package com.example.santa.domain.meeting.service;
 import com.example.santa.domain.category.entity.Category;
 import com.example.santa.domain.category.repository.CategoryRepository;
 import com.example.santa.domain.meeting.dto.MeetingDto;
+import com.example.santa.domain.meeting.dto.MeetingResponseDto;
 import com.example.santa.domain.meeting.dto.ParticipantDto;
 import com.example.santa.domain.meeting.entity.Meeting;
 import com.example.santa.domain.meeting.entity.MeetingTag;
@@ -44,10 +45,10 @@ public class MeetingService {
         this.participantRepository = participantRepository;
     }
 
-    public MeetingDto createMeeting(MeetingDto meetingDto){
+    public MeetingResponseDto createMeeting(MeetingDto meetingDto){
         Category category = categoryRepository.findByName(meetingDto.getCategoryName())
                 .orElseThrow(() -> new ServiceLogicException(ExceptionCode.CATEGORY_NOT_FOUND));
-        User leader = userRepository.findById(meetingDto.getLeaderId())
+        User leader = userRepository.findByEmail(meetingDto.getUserEmail())
                 .orElseThrow(() -> new ServiceLogicException(ExceptionCode.USER_NOT_FOUND));
 
 
@@ -95,21 +96,21 @@ public class MeetingService {
 
     }
 
-    public MeetingDto meetingDetail(Long id){
+    public MeetingResponseDto meetingDetail(Long id){
         Meeting meeting = meetingRepository.findById(id)
                 .orElseThrow(() -> new ServiceLogicException(ExceptionCode.MEETING_NOT_FOUND));
         return convertToDto(meeting);
     }
 
-    public Participant joinMeeting(Long id, Long userId) {
+    public Participant joinMeeting(Long id, String userEmail) {
         Meeting meeting = meetingRepository.findById(id)
                 .orElseThrow(() -> new ServiceLogicException(ExceptionCode.MEETING_NOT_FOUND));
-        User user = userRepository.findById(userId)
+        User user = userRepository.findByEmail(userEmail)
                 .orElseThrow(() -> new ServiceLogicException(ExceptionCode.USER_NOT_FOUND));
 
         // 이미 참여중인지 확인
         boolean isAlreadyParticipant = meeting.getParticipant().stream()
-                .anyMatch(participant -> participant.getUser().getId().equals(userId));
+                .anyMatch(participant -> participant.getUser().getId().equals(user.getId()));
 
         if (isAlreadyParticipant) {
             // 이미 참여중인 경우 예외 발생 또는 적절한 처리
@@ -127,7 +128,7 @@ public class MeetingService {
         return participant;
     }
 
-    public List<MeetingDto> getAllMeetings(){
+    public List<MeetingResponseDto> getAllMeetings(){
 
         List<Meeting> meetings = meetingRepository.findAll();
         return meetings.stream().map(this::convertToDto).collect(Collectors.toList());
@@ -135,7 +136,7 @@ public class MeetingService {
     }
 
     @Transactional
-    public MeetingDto updateMeeting(Long id, MeetingDto meetingDto) {
+    public MeetingResponseDto updateMeeting(Long id, MeetingDto meetingDto) {
         Meeting meeting = meetingRepository.findById(id)
                 .orElseThrow(() -> new ServiceLogicException(ExceptionCode.MEETING_NOT_FOUND));
         Category category = categoryRepository.findByName(meetingDto.getCategoryName())
@@ -177,18 +178,18 @@ public class MeetingService {
         meetingRepository.deleteById(id);
     }
 
-    public List<MeetingDto> findMeetingsByTagName(String tagName) {
+    public List<MeetingResponseDto> findMeetingsByTagName(String tagName) {
         List<Meeting> meetings = meetingRepository.findByTagName(tagName);
         return meetings.stream().map(this::convertToDto).collect(Collectors.toList());
     }
 
-    public List<MeetingDto> getMeetingsByCategoryName(String categoryName) {
+    public List<MeetingResponseDto> getMeetingsByCategoryName(String categoryName) {
         List<Meeting> meetings = meetingRepository.findByCategory_Name(categoryName);
         return meetings.stream().map(this::convertToDto).collect(Collectors.toList());
     }
 
-    public MeetingDto convertToDto(Meeting meeting) {
-        MeetingDto meetingDto = new MeetingDto();
+    public MeetingResponseDto convertToDto(Meeting meeting) {
+        MeetingResponseDto meetingDto = new MeetingResponseDto();
         meetingDto.setMeetingId(meeting.getId());
         meetingDto.setMeetingName(meeting.getMeetingName()); // 모임 이름 설정
         meetingDto.setCategoryName(meeting.getCategory().getName()); // 카테고리 이름 설정
