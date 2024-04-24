@@ -215,6 +215,7 @@ public class MeetingService {
             ParticipantDto participantDto = new ParticipantDto();
             participantDto.setUserId(user.getId());
             participantDto.setUserName(user.getName());
+            participantDto.setUserImage(user.getImage());
 
             // 생성한 ParticipantDto 객체를 리스트에 추가합니다.
             participantDtoList.add(participantDto);

@@ -32,7 +32,7 @@ public class User extends BaseEntity implements UserDetails {
 
     private String phoneNumber;
 
-    private String image;
+    private String image = "/images/defaultProfile.png";
 
     @Enumerated(EnumType.STRING)
     private Role role;
