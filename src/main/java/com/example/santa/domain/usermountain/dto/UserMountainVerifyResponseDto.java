@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 @Getter
@@ -17,7 +18,7 @@ public class UserMountainVerifyResponseDto {
     private String mountainName;
     private String mountainLocation;
     private Double userAccumulatedHeight;
-    private Date climbDate;
+    private LocalDate climbDate;
     private String location;
     private Double latitude;
     private Double longitude;

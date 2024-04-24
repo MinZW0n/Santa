@@ -12,7 +12,7 @@ import lombok.Setter;
 public class UserMountainRequestDto {
     private Long userId;
     private Long mountainId;
-    private Long categoryId;
+//    private Long categoryId;
     private double latitude;
     private double longitude;
 }

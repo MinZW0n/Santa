@@ -8,6 +8,7 @@ import com.example.santa.domain.user.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 @Entity
@@ -21,9 +22,10 @@ public class UserMountain {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Date climbDate;
+    private LocalDate climbDate;
     private double latitude;
     private double longitude;
+    private Long categoryId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "mountain_id")
@@ -34,6 +36,6 @@ public class UserMountain {
     private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "category_id")
+    @JoinColumn(name = "category_name")
     private Category category;
 }

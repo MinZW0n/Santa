@@ -1,7 +1,9 @@
 package com.example.santa.domain.mountain.service;
 
-import org.springframework.stereotype.Service;
 
-@Service
-public class MountainService {
-}
+//import com.example.santa.domain.mountain.dto.MountainResponseDto;
+//
+//public interface MountainService {
+//
+//    MountainResponseDto
+//}

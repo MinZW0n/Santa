@@ -1,5 +1,6 @@
 package com.example.santa.domain.usermountain.service;
 
+import ch.qos.logback.classic.Logger;
 import com.example.santa.domain.category.entity.Category;
 import com.example.santa.domain.category.repository.CategoryRepository;
 import com.example.santa.domain.mountain.entity.Mountain;
@@ -11,16 +12,21 @@ import com.example.santa.domain.usermountain.dto.UserMountainVerifyRequestDto;
 import com.example.santa.domain.usermountain.dto.UserMountainVerifyResponseDto;
 import com.example.santa.domain.usermountain.entity.UserMountain;
 import com.example.santa.domain.usermountain.repository.UserMountainRepository;
+import com.example.santa.global.exception.ExceptionCode;
+import com.example.santa.global.exception.ServiceLogicException;
 import com.example.santa.global.util.mapsturct.UserMountainResponseDtoMapper;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
 @Service
+@Slf4j
 public class UserMountainServiceImpl implements UserMountainService {
 
     private final UserMountainRepository userMountainRepository;
@@ -38,81 +44,105 @@ public class UserMountainServiceImpl implements UserMountainService {
         this.categoryRepository = categoryRepository;
         this.userMountainResponseDtoMapper = userMountainResponseDtoMapper;
     }
-
     //산 인증
     @Override
     @Transactional
-    public UserMountainResponseDto verifyAndCreateUserMountain(double latitude, double longitude, Date climbDate, String userEmail, Long categoryId) {
-        User user = userRepository.findByEmail(userEmail).orElseThrow(() -> new RuntimeException("유저를 찾을 수 없습니다."));
-        System.out.println(user.getEmail());
-        Category category = categoryRepository.findById(categoryId).orElseThrow(() -> new RuntimeException("등록되지 않은 카테고리입니다."));
-        double distance = 0.05;
-        Optional<Mountain> optionalMountain = mountainRepository.findMountainsWithinDistance(latitude, longitude, distance);
-
-
+    public UserMountainResponseDto verifyAndCreateUserMountain(double latitude, double longitude, LocalDate climbDate, String email) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new ServiceLogicException(ExceptionCode.USER_NOT_FOUND));
+        Category category = categoryRepository.findByName("기타")
+                .orElseThrow(() -> new RuntimeException("기타 카테고리가 등록되지 않았습니다."));
+        double distance = 5;
+        Optional<Mountain> optionalMountain = mountainRepository.findMountainsWithinDistance(
+                latitude,
+                longitude,
+                distance);
         if (optionalMountain.isPresent()) {
             Mountain mountain = optionalMountain.get();
-            UserMountain userMountain = UserMountain.builder()
+            // 여기서 검증 로직 추가
+            Optional<UserMountain> existingRecord = userMountainRepository.findByUserAndMountainAndClimbDate(
+                    user, mountain, climbDate);
+            if (existingRecord.isPresent()) {
+                throw new IllegalStateException("이미 같은 날에 이 산에 대한 인증이 존재합니다.");
+            }
+
+            UserMountain save = userMountainRepository.save(UserMountain.builder()
                     .latitude(latitude)
                     .longitude(longitude)
                     .climbDate(climbDate)
                     .mountain(mountain)
                     .user(user)
-                    .category(category)
-                    .build();
-            UserMountain savedUserMountain = userMountainRepository.save(userMountain);
-            return userMountainResponseDtoMapper.toDto(savedUserMountain);
+                    .category(category) //기타 카테고리 고정
+                    .build());
+
+            double newAccumulatedHeight = user.getAccumulatedHeight() + mountain.getHeight();
+            user.setAccumulatedHeight(newAccumulatedHeight);
+            userRepository.save(user);
+            log.info("mountain {}", save.getMountain());
+            log.info("user {}", save.getUser());
+            log.info("user {}", save.getCategory());
+            return userMountainResponseDtoMapper.toDto(save);
         } else {
             throw new IllegalArgumentException("인증에 실패하셨습니다.");
         }
+        //>
     }
 
-    //오류발생  java.lang.RuntimeException: 유저를 찾을 수 없습니다.
+    //오류발생  java.lang.RuntimeException: 유저를 찾을 수 없습니다. 완성코드
     @Override
-    public UserMountainResponseDto verifyAndCreateUserMountain1(UserMountainVerifyRequestDto userMountainVerifyRequestDto) {
-        System.out.println(userMountainVerifyRequestDto.getUserEmail());
-        System.out.println(userMountainVerifyRequestDto.getLongitude());
-        User user = userRepository.findByEmail(userMountainVerifyRequestDto.getUserEmail()).orElseThrow(() -> new RuntimeException("유저를 찾을 수 없습니다."));
-        Category category = categoryRepository.findById(userMountainVerifyRequestDto.getCategoryId()).orElseThrow(() -> new RuntimeException("등록되지 않은 카테고리입니다."));
-        double distance = 0.05;
-        Optional<Mountain> optionalMountain = mountainRepository.findMountainsWithinDistance(userMountainVerifyRequestDto.getLatitude(),userMountainVerifyRequestDto.getLongitude() , distance);
-
-//        // 기타 카테고리 인지 확인
-//        if (!"기타".equals(category.getName())) {
-//            throw new IllegalArgumentException("기타 카테고리가 아닙니다?");
-//        }
+    public UserMountainResponseDto verifyAndCreateUserMountain1(UserMountainVerifyRequestDto userMountainVerifyRequestDto,String email) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new ServiceLogicException(ExceptionCode.USER_NOT_FOUND));
+        Category category = categoryRepository.findByName("기타")
+                .orElseThrow(() -> new RuntimeException("기타 카테고리가 등록되지 않았습니다."));
+        double distance = 5;
+        Optional<Mountain> optionalMountain = mountainRepository.findMountainsWithinDistance(
+                userMountainVerifyRequestDto.getLatitude(),
+                userMountainVerifyRequestDto.getLongitude(),
+                distance);
 
         if (optionalMountain.isPresent()) {
             Mountain mountain = optionalMountain.get();
-            UserMountain userMountain = UserMountain.builder()
+
+            // 여기서 검증 로직 추가
+            Optional<UserMountain> existingRecord = userMountainRepository.findByUserAndMountainAndClimbDate(
+                    user, mountain, userMountainVerifyRequestDto.getClimbDate());
+            if (existingRecord.isPresent()) {
+                throw new IllegalStateException("이미 같은 날에 이 산에 대한 인증이 존재합니다.");
+            }
+
+            log.info("mountain {}", mountain);
+            log.info("user {}", user);
+            log.info("category {}", category);
+            UserMountain save = userMountainRepository.save(UserMountain.builder()
                     .latitude(userMountainVerifyRequestDto.getLatitude())
                     .longitude(userMountainVerifyRequestDto.getLongitude())
                     .climbDate(userMountainVerifyRequestDto.getClimbDate())
                     .mountain(mountain)
                     .user(user)
-                    .category(category)
-                    .build();
-            UserMountain savedUserMountain = userMountainRepository.save(userMountain);
+                    .category(category) //기타 카테고리 고정
+                    .build());
 
-            // 누적 높이
             double newAccumulatedHeight = user.getAccumulatedHeight() + mountain.getHeight();
             user.setAccumulatedHeight(newAccumulatedHeight);
-            userRepository.save(user); //user엔티티에 저장해도되나?
+            userRepository.save(user);
 
-            return userMountainResponseDtoMapper.toDto(savedUserMountain);
+            return userMountainResponseDtoMapper.toDto(save);
         } else {
             throw new IllegalArgumentException("인증에 실패하셨습니다.");
         }
+        //>
     }
 
-    //등산한 모든 산
+    //등산한 모든 산 유저쪽으로
     @Override
     public List<UserMountainResponseDto> getAllUserMountains() {
+        //유저 테이블에 유저마운틴을 조인해서 가져와라 id: user.getId()
         List<UserMountain> userMountains = userMountainRepository.findAll();
         return userMountainResponseDtoMapper.toDtoList(userMountains);
     }
 
-    //등산한 산
+    //등산한 산 유저쪽으로
     @Override
     public UserMountainResponseDto getUserMountainById(Long id) {
         UserMountain userMountain = userMountainRepository.findById(id)
@@ -131,6 +161,46 @@ public class UserMountainServiceImpl implements UserMountainService {
         //설악산이 맞습니까? 이런식으로 로직이 추가되어야
     }
 
+
+    //코치님 피드백 적용
+//
+//    @Override
+//    public UserMountainResponseDto verifyAndCreateUserMountain1(UserMountainVerifyRequestDto userMountainVerifyRequestDto) {
+////        //마운틴
+////        //유저 부분 토큰에서 검증되기때문에 필요없다
+////        //<마운틴이 가져간다
+////        Category category = categoryRepository.findById(userMountainVerifyRequestDto.getCategoryId()).orElseThrow(() -> new RuntimeException("등록되지 않은 카테고리입니다."));
+////        double distance = 0.05;
+//        Optional<Mountain> optionalMountain = mountainRepository.findMountainsWithinDistance(userMountainVerifyRequestDto.getLatitude(),userMountainVerifyRequestDto.getLongitude() , distance);
+////        Mountain mountain = optionalMountain.get();
+////
+////        //
+////        //
+////
+//        //<유지
+//        //마운틴 컨트롤러에서 얘를 호출
+//        if (optionalMountain.isPresent()) {
+//            UserMountain userMountain = UserMountain.builder()
+//                    .latitude(userMountainVerifyRequestDto.getLatitude())
+//                    .longitude(userMountainVerifyRequestDto.getLongitude())
+//                    .climbDate(userMountainVerifyRequestDto.getClimbDate())
+//                    .mountain(mountain)
+//                    .user(user)
+//                    .category(category)
+//                    .build();
+//            UserMountain savedUserMountain = userMountainRepository.save(userMountain);
+//
+//            // 누적 높이
+//            double newAccumulatedHeight = user.getAccumulatedHeight() + mountain.getHeight();
+//            user.setAccumulatedHeight(newAccumulatedHeight);
+//            userRepository.save(user); //user엔티티에 저장해도되나?
+//
+//            return userMountainResponseDtoMapper.toDto(savedUserMountain);
+//        } else {
+//            throw new IllegalArgumentException("인증에 실패하셨습니다.");
+//        }
+//        //>
+//    }
 }
 
 //    1차 완성 코드
