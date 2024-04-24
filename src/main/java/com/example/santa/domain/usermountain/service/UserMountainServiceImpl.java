@@ -88,7 +88,7 @@ public class UserMountainServiceImpl implements UserMountainService {
         //>
     }
 
-    //오류발생  java.lang.RuntimeException: 유저를 찾을 수 없습니다. 완성코드
+    //오류발생  완성코드
     @Override
     public UserMountainResponseDto verifyAndCreateUserMountain1(UserMountainVerifyRequestDto userMountainVerifyRequestDto,String email) {
         User user = userRepository.findByEmail(email)
@@ -134,21 +134,21 @@ public class UserMountainServiceImpl implements UserMountainService {
         //>
     }
 
-    //등산한 모든 산 유저쪽으로
-    @Override
-    public List<UserMountainResponseDto> getAllUserMountains() {
-        //유저 테이블에 유저마운틴을 조인해서 가져와라 id: user.getId()
-        List<UserMountain> userMountains = userMountainRepository.findAll();
-        return userMountainResponseDtoMapper.toDtoList(userMountains);
-    }
+//    //등산한 모든 산 유저쪽으로
+//    @Override
+//    public List<UserMountainResponseDto> getAllUserMountains() {
+//        //유저 테이블에 유저마운틴을 조인해서 가져와라 id: user.getId()
+//        List<UserMountain> userMountains = userMountainRepository.findAll();
+//        return userMountainResponseDtoMapper.toDtoList(userMountains);
+//    }
 
-    //등산한 산 유저쪽으로
-    @Override
-    public UserMountainResponseDto getUserMountainById(Long id) {
-        UserMountain userMountain = userMountainRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("UserMountain not found with id: " + id));
-        return userMountainResponseDtoMapper.toDto(userMountain);
-    }
+//    //등산한 산 유저쪽으로
+//    @Override
+//    public UserMountainResponseDto getUserMountainById(Long id) {
+//        UserMountain userMountain = userMountainRepository.findById(id)
+//                .orElseThrow(() -> new RuntimeException("UserMountain not found with id: " + id));
+//        return userMountainResponseDtoMapper.toDto(userMountain);
+//    }
 
 
     @Override

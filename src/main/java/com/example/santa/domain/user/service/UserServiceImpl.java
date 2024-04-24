@@ -8,8 +8,11 @@ import com.example.santa.domain.user.entity.Password;
 import com.example.santa.domain.user.entity.Role;
 import com.example.santa.domain.user.entity.User;
 import com.example.santa.domain.user.repository.UserRepository;
+import com.example.santa.domain.usermountain.dto.UserMountainResponseDto;
+import com.example.santa.domain.usermountain.entity.UserMountain;
 import com.example.santa.global.security.jwt.JwtToken;
 import com.example.santa.global.security.jwt.JwtTokenProvider;
+import com.example.santa.global.util.mapsturct.UserMountainResponseDtoMapper;
 import com.example.santa.global.util.mapsturct.UserResponseDtoMapper;
 import jakarta.persistence.EntityExistsException;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +26,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @Transactional(readOnly = true)
@@ -33,6 +37,8 @@ public class UserServiceImpl implements UserService {
     private final UserResponseDtoMapper userResponseDtoMapper;
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private final JwtTokenProvider jwtTokenProvider;
+
+    private final UserMountainResponseDtoMapper userMountainResponseDtoMapper;
 
     @Transactional
     @Override
@@ -129,8 +135,19 @@ public class UserServiceImpl implements UserService {
         return user.getEmail();
     }
 
+    @Override
+    public Page<UserMountainResponseDto> findAllUserMountains(String email, Pageable pageable) {
+        User byEmail = userRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("해당 유저가 없습니다. userEmail=" + email));
+        Page<UserMountainResponseDto> pageDto = userRepository.findUserMountainsByUserId(byEmail.getId(), pageable)
+                .map(userMountainResponseDtoMapper::toDto);
+        return pageDto;
+    }
+
 //    @Override
 //    public String findPassword(String email, String newPassword) {
 //
 //    }
+
+
 }

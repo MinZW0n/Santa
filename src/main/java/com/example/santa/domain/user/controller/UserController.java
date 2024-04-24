@@ -5,6 +5,7 @@ import com.example.santa.domain.mail.dto.EmailRequestDto;
 import com.example.santa.domain.mail.service.EmailSendService;
 import com.example.santa.domain.user.dto.*;
 import com.example.santa.domain.user.service.UserService;
+import com.example.santa.domain.usermountain.dto.UserMountainResponseDto;
 import com.example.santa.global.security.jwt.JwtToken;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -17,6 +18,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -155,4 +157,20 @@ public class UserController {
 //    public ResponseEntity<String> findPassword(String email, String newPassword) {
 //
 //    }
+
+    //유저 마운틴 전체조회
+    @GetMapping("/mountains")
+    @Operation(summary = "등반한 산 전체조회", description = "등반한 산 전체조회")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = UserResponseDto.class))),
+            @ApiResponse(responseCode = "500", description = "에러", content = @Content(schema = @Schema(implementation = UserResponseDto.class)))})
+    public ResponseEntity<Page<UserMountainResponseDto>> getAllUserMountains(@AuthenticationPrincipal String email
+            , @RequestParam(name = "size", defaultValue = "5") Integer size
+            , @RequestParam(name = "page", defaultValue = "0") Integer page) {
+        Page<UserMountainResponseDto> allUserMountains = userService.findAllUserMountains(email, PageRequest.of(page, size));
+        return ResponseEntity.ok(allUserMountains);
+    }
+
+
+
 }

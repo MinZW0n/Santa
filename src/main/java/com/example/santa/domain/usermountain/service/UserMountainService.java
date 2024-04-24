@@ -16,8 +16,8 @@ public interface UserMountainService {
 
     UserMountainResponseDto verifyAndCreateUserMountain1(UserMountainVerifyRequestDto userMountainVerifyRequestDto,String email);
 
-    List<UserMountainResponseDto> getAllUserMountains();
+//    List<UserMountainResponseDto> getAllUserMountains();
 
-    UserMountainResponseDto getUserMountainById(Long id);
+//    UserMountainResponseDto getUserMountainById(Long id);
 
 }

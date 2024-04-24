@@ -5,9 +5,12 @@ import com.example.santa.domain.user.dto.UserSignInRequestDto;
 import com.example.santa.domain.user.dto.UserSignupRequestDto;
 import com.example.santa.domain.user.dto.UserUpdateRequestDto;
 import com.example.santa.domain.user.entity.Password;
+import com.example.santa.domain.usermountain.dto.UserMountainResponseDto;
 import com.example.santa.global.security.jwt.JwtToken;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+
+import java.util.List;
 
 public interface UserService {
     // create
@@ -28,4 +31,7 @@ public interface UserService {
     String changePassword(String email, String oldPassword, String newPassword);
 
 //    String findPassword(String email, String newPassword);
+//    Page<UserMountainResponseDto> findAllUserMountains(Pageable pageable);
+
+    Page<UserMountainResponseDto> findAllUserMountains(String email, Pageable pageable);
 }

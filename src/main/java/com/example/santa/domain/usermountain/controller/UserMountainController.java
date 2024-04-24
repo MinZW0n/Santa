@@ -77,25 +77,25 @@ public class UserMountainController {
         return ResponseEntity.ok(userMountains);
     }
 
-    @Operation(summary = "유저 마운틴 조회 기능", description = "전체 유저 마운틴 조회")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = ChallengeResponseDto.class))),
-            @ApiResponse(responseCode = "500", description = "에러", content = @Content(schema = @Schema(implementation = ChallengeResponseDto.class)))})
-    @GetMapping
-    public ResponseEntity<List<UserMountainResponseDto>> getAllUserMountains() {
-        List<UserMountainResponseDto> userMountains = userMountainService.getAllUserMountains();
-        return ResponseEntity.ok(userMountains);
-    }
+//    @Operation(summary = "유저 마운틴 조회 기능", description = "전체 유저 마운틴 조회")
+//    @ApiResponses(value = {
+//            @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = ChallengeResponseDto.class))),
+//            @ApiResponse(responseCode = "500", description = "에러", content = @Content(schema = @Schema(implementation = ChallengeResponseDto.class)))})
+//    @GetMapping
+//    public ResponseEntity<List<UserMountainResponseDto>> getAllUserMountains() {
+//        List<UserMountainResponseDto> userMountains = userMountainService.getAllUserMountains();
+//        return ResponseEntity.ok(userMountains);
+//    }
 
-    @Operation(summary = "유저 마운틴 개별 조회 기능", description = "유저 마운틴 고유 id로 조회")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = ChallengeResponseDto.class))),
-            @ApiResponse(responseCode = "500", description = "에러", content = @Content(schema = @Schema(implementation = ChallengeResponseDto.class)))})
-    @GetMapping("/{id}")
-    public ResponseEntity<UserMountainResponseDto> getUserMountainById(@PathVariable Long id) {
-        UserMountainResponseDto userMountainDTO = userMountainService.getUserMountainById(id);
-        return ResponseEntity.ok(userMountainDTO);
-    }
+//    @Operation(summary = "유저 마운틴 개별 조회 기능", description = "유저 마운틴 고유 id로 조회")
+//    @ApiResponses(value = {
+//            @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = ChallengeResponseDto.class))),
+//            @ApiResponse(responseCode = "500", description = "에러", content = @Content(schema = @Schema(implementation = ChallengeResponseDto.class)))})
+//    @GetMapping("/{id}")
+//    public ResponseEntity<UserMountainResponseDto> getUserMountainById(@PathVariable Long id) {
+//        UserMountainResponseDto userMountainDTO = userMountainService.getUserMountainById(id);
+//        return ResponseEntity.ok(userMountainDTO);
+//    }
 
 
 }
