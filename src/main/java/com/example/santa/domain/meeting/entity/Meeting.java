@@ -37,7 +37,7 @@ public class Meeting {
     @ManyToOne(fetch = FetchType.LAZY)
     private User leader;
 
-    @OneToMany(mappedBy = "meeting")
+    @OneToMany(mappedBy = "meeting", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference("meeting-meetingTag")
     private Set<MeetingTag> meetingTags = new HashSet<>();
 
@@ -45,7 +45,7 @@ public class Meeting {
     @JoinColumn(name = "category_name")
     private Category category;
 
-    @OneToMany(mappedBy = "meeting")
+    @OneToMany(mappedBy = "meeting", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Participant> participant;
 
 
