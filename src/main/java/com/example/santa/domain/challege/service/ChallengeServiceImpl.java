@@ -15,6 +15,7 @@ import com.example.santa.global.exception.ServiceLogicException;
 import com.example.santa.global.util.mapsturct.ChallengeResponseMapper;
 import com.example.santa.domain.challege.repository.ChallengeRepository;
 import com.example.santa.global.util.mapsturct.UserChallengeResponseMapper;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -27,6 +28,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@Slf4j
 public class ChallengeServiceImpl implements ChallengeService{
 
     private final ChallengeRepository challengeRepository;
@@ -72,6 +74,7 @@ public class ChallengeServiceImpl implements ChallengeService{
     @Override
     public Page<ChallengeResponseDto> findAllChallenges(Pageable pageable){
         Page<Challenge> challenges =challengeRepository.findAll(pageable);
+        log.info("category {}", challenges );
         return challenges.map(challengeResponseMapper::toDto);
     }
 
