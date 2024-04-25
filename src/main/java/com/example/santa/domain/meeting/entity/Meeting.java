@@ -1,6 +1,7 @@
 package com.example.santa.domain.meeting.entity;
 
 import com.example.santa.domain.category.entity.Category;
+import com.example.santa.domain.common.BaseEntity;
 import com.example.santa.domain.user.entity.User;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
@@ -19,7 +20,7 @@ import java.util.Set;
 @AllArgsConstructor
 @Setter
 @Getter
-public class Meeting {
+public class Meeting extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

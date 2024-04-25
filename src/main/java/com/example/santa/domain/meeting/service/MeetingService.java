@@ -18,6 +18,10 @@ import com.example.santa.domain.user.repository.UserRepository;
 import com.example.santa.global.exception.ExceptionCode;
 import com.example.santa.global.exception.ServiceLogicException;
 import jakarta.transaction.Transactional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -137,11 +141,22 @@ public class MeetingService {
         return participant;
     }
 
-    public List<MeetingResponseDto> getAllMeetings(){
+    public Page<MeetingResponseDto> getAllMeetings(Pageable pageable){
 
-        List<Meeting> meetings = meetingRepository.findAll();
-        return meetings.stream().map(this::convertToDto).collect(Collectors.toList());
+        Page<Meeting> meetings = meetingRepository.findAll(pageable);
+        return meetings.map(this::convertToDto);
 
+    }
+    public Page<MeetingResponseDto> getAllMeetingsNoOffset(Long lastId, int size) {
+        Page<Meeting> meetings;
+        if (lastId == null) {
+            // 커서가 제공되지 않은 경우 처음부터 조회
+            meetings = meetingRepository.findAll(PageRequest.of(0, size, Sort.by("id").descending()));
+        } else {
+            // 커서를 기반으로 다음 데이터 조회
+            meetings = meetingRepository.findByIdLessThanOrderByIdDesc(lastId, PageRequest.of(0, size));
+        }
+        return meetings.map(this::convertToDto);
     }
 
     @Transactional
@@ -187,14 +202,76 @@ public class MeetingService {
         meetingRepository.deleteById(id);
     }
 
-    public List<MeetingResponseDto> findMeetingsByTagName(String tagName) {
-        List<Meeting> meetings = meetingRepository.findByTagName(tagName);
-        return meetings.stream().map(this::convertToDto).collect(Collectors.toList());
+    public Page<MeetingResponseDto> getMeetingsByTagName(String tagName, Pageable pageable) {
+        Page<Meeting> meetings = meetingRepository.findByTagName(tagName,pageable);
+        return meetings.map(this::convertToDto);
     }
 
-    public List<MeetingResponseDto> getMeetingsByCategoryName(String categoryName) {
-        List<Meeting> meetings = meetingRepository.findByCategory_Name(categoryName);
-        return meetings.stream().map(this::convertToDto).collect(Collectors.toList());
+    public Page<MeetingResponseDto> getMeetingsByTagNameNoOffset(String tagName, Long lastId, int size) {
+        Page<Meeting> meetings;
+        if (lastId == null) {
+            meetings = meetingRepository.findByTagName(tagName, PageRequest.of(0, size, Sort.by("id").descending()));
+        } else {
+            meetings = meetingRepository.findByTagNameAndIdLessThan(tagName, lastId, PageRequest.of(0, size, Sort.by("id").descending()));
+        }
+        return meetings.map(this::convertToDto);
+    }
+
+
+    public Page<MeetingResponseDto> getMeetingsByCategoryName(String categoryName, Pageable pageable) {
+        Page<Meeting> meetings = meetingRepository.findByCategory_Name(categoryName,pageable);
+        return meetings.map(this::convertToDto);
+    }
+
+    public Page<MeetingResponseDto> getMeetingsByCategoryNameNoOffset(String categoryName, Long lastId, int size) {
+        Page<Meeting> meetings;
+        if (lastId == null) {
+            // lastId가 null일 경우, 가장 최근 데이터부터 시작
+            meetings = meetingRepository.findByCategory_Name(categoryName, PageRequest.of(0, size, Sort.by("id").descending()));
+        } else {
+            // lastId를 기반으로 다음 데이터 조회
+            meetings = meetingRepository.findByCategory_NameAndIdLessThan(categoryName, lastId, PageRequest.of(0, size, Sort.by("id").descending()));
+        }
+        return meetings.map(this::convertToDto);
+    }
+
+
+    public Page<MeetingResponseDto> getAllMeetingsByParticipantCount(Pageable pageable) {
+        Page<Meeting> meetings = meetingRepository.findAllByParticipantCount(pageable);
+        return meetings.map(this::convertToDto);
+    }
+
+    public Page<MeetingResponseDto> getAllMeetingsByParticipantCountNoOffset(Long lastId, int size) {
+        Page<Meeting> meetings;
+        if (lastId == null) {
+            // lastId가 제공되지 않은 경우, 가장 최근 데이터부터 시작
+            meetings = meetingRepository.findAllByParticipantCount(PageRequest.of(0, size, Sort.by("id").descending()));
+        } else {
+            meetings = meetingRepository.findAllByParticipantCountAndIdLessThan(lastId, PageRequest.of(0, size, Sort.by("id").descending()));
+        }
+        return meetings.map(this::convertToDto);
+    }
+
+
+    public Page<MeetingResponseDto> getMyMeetings(String email, Pageable pageable){
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new ServiceLogicException(ExceptionCode.USER_NOT_FOUND));
+
+        Page<Meeting> meetings = meetingRepository.findMeetingsByParticipantUserId(user.getId(), pageable);
+        return meetings.map(this::convertToDto);
+    }
+
+    public Page<MeetingResponseDto> getMyMeetingsNoOffset(Long lastId, int size, String email){
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new ServiceLogicException(ExceptionCode.USER_NOT_FOUND));
+        Page<Meeting> meetings;
+        if (lastId == null) {
+            // lastId가 제공되지 않은 경우, 가장 최근 데이터부터 시작
+            meetings = meetingRepository.findMeetingsByParticipantUserId(user.getId(), PageRequest.of(0, size, Sort.by("id").descending()));
+        } else {
+            meetings = meetingRepository.findMeetingsByParticipantUserIdAndIdLessThan(user.getId(),lastId, PageRequest.of(0, size, Sort.by("id").descending()));
+        }
+        return meetings.map(this::convertToDto);
     }
 
     public MeetingResponseDto convertToDto(Meeting meeting) {
