@@ -73,10 +73,14 @@ public class UserMountainController {
         System.out.println(email);
         UserMountainResponseDto userMountains = userMountainService.verifyAndCreateUserMountain1(request, email);
 
+
 //            return new ResponseEntity<>(userMountains, HttpStatus.CREATED);
         return ResponseEntity.ok(userMountains);
     }
 
+}
+
+//USER쪽으로 이동
 //    @Operation(summary = "유저 마운틴 조회 기능", description = "전체 유저 마운틴 조회")
 //    @ApiResponses(value = {
 //            @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = ChallengeResponseDto.class))),
@@ -97,15 +101,6 @@ public class UserMountainController {
 //        return ResponseEntity.ok(userMountainDTO);
 //    }
 
-
-}
-
-
-//    @PostMapping
-//    public ResponseEntity<UserMountainResponseDto> createUserMountain(@RequestBody UserMountainRequestDto request) {
-//        UserMountainResponseDto userMountainResponseDto = userMountainServiceImpl.verify2(request.getUserId(), request.getMountainId(), request.getLatitude(), request.getLongitude());
-//        return ResponseEntity.ok(userMountainResponseDto);
-//    }
 
 
 //    @PostMapping

@@ -1,5 +1,7 @@
 package com.example.santa.domain.userchallenge.dto;
 
+import com.example.santa.domain.challege.dto.ChallengeRequestDto;
+import com.example.santa.domain.challege.dto.ChallengeResponseDto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -18,5 +20,6 @@ public class UserChallengeResponseDto {
     private String progress;
     private Boolean isCompleted;
     private Date completionDate;
+    private ChallengeResponseDto challenge;
 
 }

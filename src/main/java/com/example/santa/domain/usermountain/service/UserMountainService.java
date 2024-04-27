@@ -10,11 +10,11 @@ import java.util.List;
 
 public interface UserMountainService {
 
-    Mountain test(double latitude, double longitude);
 
     UserMountainResponseDto verifyAndCreateUserMountain(double latitude, double longitude, LocalDate climbDate, String email );
 
     UserMountainResponseDto verifyAndCreateUserMountain1(UserMountainVerifyRequestDto userMountainVerifyRequestDto,String email);
+    void updateProgress(String email, Long userMountainId);
 
 //    List<UserMountainResponseDto> getAllUserMountains();
 

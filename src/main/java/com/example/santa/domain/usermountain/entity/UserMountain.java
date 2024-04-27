@@ -5,6 +5,7 @@ import com.example.santa.domain.challege.entity.Challenge;
 import com.example.santa.domain.common.BaseEntity;
 import com.example.santa.domain.mountain.entity.Mountain;
 import com.example.santa.domain.user.entity.User;
+import com.example.santa.domain.userchallenge.entity.UserChallenge;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -38,4 +39,10 @@ public class UserMountain {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_name")
     private Category category;
+
+//    @ManyToOne(fetch = FetchType.LAZY)
+//    @JoinColumn(name = "userChallenge_id")
+//    private UserChallenge userChallenge;
+
+
 }

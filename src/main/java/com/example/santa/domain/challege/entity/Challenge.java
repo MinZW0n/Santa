@@ -40,4 +40,5 @@ public class Challenge extends BaseEntity {
     private Category category;
 
 
+
 }
