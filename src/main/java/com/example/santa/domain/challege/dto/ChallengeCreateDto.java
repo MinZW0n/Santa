@@ -1,11 +1,11 @@
 package com.example.santa.domain.challege.dto;
 
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.validator.constraints.Range;
 
 @Getter
 @Setter
@@ -13,10 +13,15 @@ import lombok.Setter;
 @NoArgsConstructor
 public class ChallengeCreateDto {
 
+
+    private Long categoryId;
+
     @NotNull(message = "업적 명은 필수 입력란 입니다.")
+//    @Max(value = 20, message = "20자 이내로 작성해 주세요")
     private String name;
 
-    @NotNull(message = "업적 설명은 필수 입력란 입니다.")
+    @NotBlank(message = "업적 설명은 필수 입력란 입니다.")
+//    @Max(value = 1000, message = "10000자 이내로 작성해 주세요")
     private String description;
 
     @NotNull(message = "완료 기준은 필수 입력란 입니다.")

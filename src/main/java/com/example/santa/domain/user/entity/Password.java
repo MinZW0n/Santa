@@ -13,6 +13,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 public class Password {
     private static final PasswordEncoder passwordEncoder = PasswordEncoderFactories.createDelegatingPasswordEncoder();
 
+
     private String encodePassword;
 
     public Password(final String rawPassword) {
@@ -33,7 +34,14 @@ public class Password {
 
     }
 
+    public void findPassword(final String newRawPassword) {
+        this.encodePassword = encodePassword(newRawPassword);
+    }
+
+
+
     private boolean isMatches(String rawPassword) {
         return passwordEncoder.matches(rawPassword, encodePassword);
     }
+
 }

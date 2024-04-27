@@ -1,0 +1,9 @@
+-- TableA  == 100대 명산
+-- TableB ==> 경도 위도 가져올 데이터 테이블
+
+UPDATE TableA A
+JOIN TableB B ON A.name = B.name
+SET
+    A.longitude02 = B.longitude02,
+    A.latitude02 = B.latitude02
+WHERE A.name  is not null;  -- A.id를 기본 키로 가정

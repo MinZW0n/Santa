@@ -3,6 +3,7 @@ package com.example.santa.domain.meeting.service;
 import com.example.santa.domain.category.entity.Category;
 import com.example.santa.domain.category.repository.CategoryRepository;
 import com.example.santa.domain.meeting.dto.MeetingDto;
+import com.example.santa.domain.meeting.dto.MeetingResponseDto;
 import com.example.santa.domain.meeting.dto.ParticipantDto;
 import com.example.santa.domain.meeting.entity.Meeting;
 import com.example.santa.domain.meeting.entity.MeetingTag;
@@ -14,6 +15,13 @@ import com.example.santa.domain.meeting.repository.ParticipantRepository;
 import com.example.santa.domain.meeting.repository.TagRepository;
 import com.example.santa.domain.user.entity.User;
 import com.example.santa.domain.user.repository.UserRepository;
+import com.example.santa.global.exception.ExceptionCode;
+import com.example.santa.global.exception.ServiceLogicException;
+import jakarta.transaction.Transactional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -41,11 +49,11 @@ public class MeetingService {
         this.participantRepository = participantRepository;
     }
 
-    public MeetingDto createMeeting(MeetingDto meetingDto){
+    public MeetingResponseDto createMeeting(MeetingDto meetingDto){
         Category category = categoryRepository.findByName(meetingDto.getCategoryName())
-                .orElseThrow(() -> new IllegalArgumentException("카테고리를 찾을 수 없습니다."));
-        User leader = userRepository.findById(meetingDto.getLeaderId())
-                .orElseThrow(() -> new IllegalArgumentException("유저를 찾을 수 없습니다."));
+                .orElseThrow(() -> new ServiceLogicException(ExceptionCode.CATEGORY_NOT_FOUND));
+        User leader = userRepository.findByEmail(meetingDto.getUserEmail())
+                .orElseThrow(() -> new ServiceLogicException(ExceptionCode.USER_NOT_FOUND));
 
 
         Meeting meeting = Meeting.builder()
@@ -92,14 +100,182 @@ public class MeetingService {
 
     }
 
-    public MeetingDto meetingDetail(Long id){
+    public MeetingResponseDto meetingDetail(Long id){
         Meeting meeting = meetingRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("모임을 찾을 수 없습니다."));
+                .orElseThrow(() -> new ServiceLogicException(ExceptionCode.MEETING_NOT_FOUND));
         return convertToDto(meeting);
     }
 
-    public MeetingDto convertToDto(Meeting meeting) {
-        MeetingDto meetingDto = new MeetingDto();
+    public Participant joinMeeting(Long id, String userEmail) {
+        Meeting meeting = meetingRepository.findById(id)
+                .orElseThrow(() -> new ServiceLogicException(ExceptionCode.MEETING_NOT_FOUND));
+        User user = userRepository.findByEmail(userEmail)
+                .orElseThrow(() -> new ServiceLogicException(ExceptionCode.USER_NOT_FOUND));
+
+        // 이미 참여중인지 확인
+        boolean isAlreadyParticipant = meeting.getParticipant().stream()
+                .anyMatch(participant -> participant.getUser().getId().equals(user.getId()));
+
+        if (isAlreadyParticipant) {
+            // 이미 참여중인 경우 예외 발생 또는 적절한 처리
+            throw new ServiceLogicException(ExceptionCode.ALREADY_PARTICIPATING);
+        }
+
+        // 이미 같은 날짜에 다른 모임에 참여 중인지 확인
+        boolean isParticipatingOnSameDate = userRepository.findMeetingsByUserId(user.getId()).stream()
+                .anyMatch(m -> m.getDate().equals(meeting.getDate()));
+
+        if (isParticipatingOnSameDate) {
+            // 같은 날짜에 다른 모임에 이미 참여중인 경우 예외 발생
+            throw new ServiceLogicException(ExceptionCode.ALREADY_PARTICIPATING_ON_DATE);
+        }
+
+        Participant participant = Participant.builder()
+                .user(user)
+                .meeting(meeting)
+                .isLeader(false)
+                .build();
+        List<Participant> participants = meeting.getParticipant();
+        participants.add(participantRepository.save(participant));
+
+        return participant;
+    }
+
+    public Page<MeetingResponseDto> getAllMeetings(Pageable pageable){
+
+        Page<Meeting> meetings = meetingRepository.findAll(pageable);
+        return meetings.map(this::convertToDto);
+
+    }
+    public Page<MeetingResponseDto> getAllMeetingsNoOffset(Long lastId, int size) {
+        Page<Meeting> meetings;
+        if (lastId == null) {
+            // 커서가 제공되지 않은 경우 처음부터 조회
+            meetings = meetingRepository.findAll(PageRequest.of(0, size, Sort.by("id").descending()));
+        } else {
+            // 커서를 기반으로 다음 데이터 조회
+            meetings = meetingRepository.findByIdLessThanOrderByIdDesc(lastId, PageRequest.of(0, size));
+        }
+        return meetings.map(this::convertToDto);
+    }
+
+    @Transactional
+    public MeetingResponseDto updateMeeting(Long id, MeetingDto meetingDto) {
+        Meeting meeting = meetingRepository.findById(id)
+                .orElseThrow(() -> new ServiceLogicException(ExceptionCode.MEETING_NOT_FOUND));
+        Category category = categoryRepository.findByName(meetingDto.getCategoryName())
+                .orElseThrow(() -> new ServiceLogicException(ExceptionCode.CATEGORY_NOT_FOUND));
+
+        meeting.setMeetingName(meetingDto.getMeetingName());
+        meeting.setCategory(category);
+        meeting.setMountainName(meetingDto.getMountainName());
+        meeting.setDescription(meetingDto.getDescription());
+        meeting.setHeadcount(meetingDto.getHeadcount());
+        meeting.setDate(meetingDto.getDate());
+        meeting.setImage(meeting.getImage());
+
+        meetingRepository.save(meeting);
+
+        Set<MeetingTag> meetingTags = new HashSet<>();
+        meetingTagRepository.deleteByMeeting(meeting);
+        for (String tagName : meetingDto.getTags()) {
+            Tag tag = tagRepository.findByName(tagName)
+                    .orElseGet(() -> tagRepository.save(Tag.builder()
+                            .name(tagName)
+                            .build()));
+            MeetingTag meetingTag = MeetingTag.builder()
+                    .tag(tag)
+                    .meeting(meeting)
+                    .build();
+            meetingTags.add(meetingTagRepository.save(meetingTag));
+        }
+
+        meeting.setMeetingTags(meetingTags);
+
+        return convertToDto(meetingRepository.save(meeting));
+    }
+
+    public void deleteMeeting(Long id) {
+        if (!meetingRepository.existsById(id)) {
+            throw new ServiceLogicException(ExceptionCode.MEETING_NOT_FOUND);
+        }
+        meetingRepository.deleteById(id);
+    }
+
+    public Page<MeetingResponseDto> getMeetingsByTagName(String tagName, Pageable pageable) {
+        Page<Meeting> meetings = meetingRepository.findByTagName(tagName,pageable);
+        return meetings.map(this::convertToDto);
+    }
+
+    public Page<MeetingResponseDto> getMeetingsByTagNameNoOffset(String tagName, Long lastId, int size) {
+        Page<Meeting> meetings;
+        if (lastId == null) {
+            meetings = meetingRepository.findByTagName(tagName, PageRequest.of(0, size, Sort.by("id").descending()));
+        } else {
+            meetings = meetingRepository.findByTagNameAndIdLessThan(tagName, lastId, PageRequest.of(0, size, Sort.by("id").descending()));
+        }
+        return meetings.map(this::convertToDto);
+    }
+
+
+    public Page<MeetingResponseDto> getMeetingsByCategoryName(String categoryName, Pageable pageable) {
+        Page<Meeting> meetings = meetingRepository.findByCategory_Name(categoryName,pageable);
+        return meetings.map(this::convertToDto);
+    }
+
+    public Page<MeetingResponseDto> getMeetingsByCategoryNameNoOffset(String categoryName, Long lastId, int size) {
+        Page<Meeting> meetings;
+        if (lastId == null) {
+            // lastId가 null일 경우, 가장 최근 데이터부터 시작
+            meetings = meetingRepository.findByCategory_Name(categoryName, PageRequest.of(0, size, Sort.by("id").descending()));
+        } else {
+            // lastId를 기반으로 다음 데이터 조회
+            meetings = meetingRepository.findByCategory_NameAndIdLessThan(categoryName, lastId, PageRequest.of(0, size, Sort.by("id").descending()));
+        }
+        return meetings.map(this::convertToDto);
+    }
+
+
+    public Page<MeetingResponseDto> getAllMeetingsByParticipantCount(Pageable pageable) {
+        Page<Meeting> meetings = meetingRepository.findAllByParticipantCount(pageable);
+        return meetings.map(this::convertToDto);
+    }
+
+    public Page<MeetingResponseDto> getAllMeetingsByParticipantCountNoOffset(Long lastId, int size) {
+        Page<Meeting> meetings;
+        if (lastId == null) {
+            // lastId가 제공되지 않은 경우, 가장 최근 데이터부터 시작
+            meetings = meetingRepository.findAllByParticipantCount(PageRequest.of(0, size, Sort.by("id").descending()));
+        } else {
+            meetings = meetingRepository.findAllByParticipantCountAndIdLessThan(lastId, PageRequest.of(0, size, Sort.by("id").descending()));
+        }
+        return meetings.map(this::convertToDto);
+    }
+
+
+    public Page<MeetingResponseDto> getMyMeetings(String email, Pageable pageable){
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new ServiceLogicException(ExceptionCode.USER_NOT_FOUND));
+
+        Page<Meeting> meetings = meetingRepository.findMeetingsByParticipantUserId(user.getId(), pageable);
+        return meetings.map(this::convertToDto);
+    }
+
+    public Page<MeetingResponseDto> getMyMeetingsNoOffset(Long lastId, int size, String email){
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new ServiceLogicException(ExceptionCode.USER_NOT_FOUND));
+        Page<Meeting> meetings;
+        if (lastId == null) {
+            // lastId가 제공되지 않은 경우, 가장 최근 데이터부터 시작
+            meetings = meetingRepository.findMeetingsByParticipantUserId(user.getId(), PageRequest.of(0, size, Sort.by("id").descending()));
+        } else {
+            meetings = meetingRepository.findMeetingsByParticipantUserIdAndIdLessThan(user.getId(),lastId, PageRequest.of(0, size, Sort.by("id").descending()));
+        }
+        return meetings.map(this::convertToDto);
+    }
+
+    public MeetingResponseDto convertToDto(Meeting meeting) {
+        MeetingResponseDto meetingDto = new MeetingResponseDto();
         meetingDto.setMeetingId(meeting.getId());
         meetingDto.setMeetingName(meeting.getMeetingName()); // 모임 이름 설정
         meetingDto.setCategoryName(meeting.getCategory().getName()); // 카테고리 이름 설정
@@ -125,6 +301,7 @@ public class MeetingService {
             ParticipantDto participantDto = new ParticipantDto();
             participantDto.setUserId(user.getId());
             participantDto.setUserName(user.getName());
+            participantDto.setUserImage(user.getImage());
 
             // 생성한 ParticipantDto 객체를 리스트에 추가합니다.
             participantDtoList.add(participantDto);
