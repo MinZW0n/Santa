@@ -43,10 +43,10 @@ public class UserServiceImpl implements UserService {
     @Transactional
     @Override
     public Long signup(UserSignupRequestDto request) {
-        if (userRepository.existsByEmail(request.getEmail())) {
+        if (checkEmailDuplicate(request.getEmail())) {
             throw new EntityExistsException("이메일 중복입니다.");
         }
-        if (userRepository.existsByNickname(request.getNickname())) {
+        if (checkNicknameDuplicate(request.getNickname())) {
             throw new EntityExistsException("닉네임 중복입니다.");
         }
 
@@ -65,18 +65,12 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Boolean checkEmailDuplicate(String email) {
-        if (userRepository.existsByEmail(email)) {
-            throw new EntityExistsException("이메일 중복입니다.");
-        }
-        return true;
+        return userRepository.existsByEmail(email);
     }
 
     @Override
     public Boolean checkNicknameDuplicate(String nickname) {
-        if (userRepository.existsByNickname(nickname)) {
-            throw new EntityExistsException("닉네임 중복입니다");
-        }
-        return true;
+        return userRepository.existsByNickname(nickname);
     }
 
     /*
@@ -87,12 +81,11 @@ public class UserServiceImpl implements UserService {
     @Transactional
     @Override
     public JwtToken signIn(UserSignInRequestDto userSignInRequestDto) {
-//        User user = userRepository.findByEmail(userSignInRequestDto.getEmail())
-//                .orElseThrow(() -> new IllegalArgumentException("해당 유저가 없습니다. userEmail=" + userSignInRequestDto.getEmail()));
+        User user = userRepository.findByEmail(userSignInRequestDto.getEmail())
+                .orElseThrow(() -> new IllegalArgumentException("해당 유저가 없습니다. userEmail=" + userSignInRequestDto.getEmail()));
         UsernamePasswordAuthenticationToken authenticationToken
-                = new UsernamePasswordAuthenticationToken(userSignInRequestDto.getEmail(), userSignInRequestDto.getPassword());
+                = new UsernamePasswordAuthenticationToken(userSignInRequestDto.getEmail(), userSignInRequestDto.getPassword(), user.getAuthorities());
         authenticationManagerBuilder.getObject().authenticate(authenticationToken);
-//        User user = userRepository.findByEmail(userSignInRequestDto.getEmail()).orElseThrow();
         JwtToken jwtToken = jwtTokenProvider.generateToken(authenticationToken);
         return jwtToken;
     }
@@ -113,12 +106,12 @@ public class UserServiceImpl implements UserService {
 
 
     @Override
-    public UserResponseDto updateUser(Long id, UserUpdateRequestDto userUpdateRequestDto) {
+    public UserResponseDto updateUser(String email, UserUpdateRequestDto userUpdateRequestDto) {
         if (userRepository.existsByNickname(userUpdateRequestDto.getNickname())) {
             throw new EntityExistsException("닉네임 중복입니다");
         }
-        User user = userRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("해당 유저가 없습니다. userId=" + id))
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("해당 유저가 없습니다. userEmail=" + email))
                 .update(userUpdateRequestDto.getName()
                         , userUpdateRequestDto.getNickname()
                         , userUpdateRequestDto.getPhoneNumber()
@@ -144,10 +137,13 @@ public class UserServiceImpl implements UserService {
         return pageDto;
     }
 
-//    @Override
-//    public String findPassword(String email, String newPassword) {
-//
-//    }
+    @Override
+    public String findPassword(String email, String newPassword) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("해당 유저가 없습니다. userEmail=" + email));
+        user.getPasswordForChange().findPassword(newPassword);
+        return user.getEmail();
+    }
 
 
 }

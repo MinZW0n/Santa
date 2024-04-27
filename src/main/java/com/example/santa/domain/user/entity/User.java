@@ -61,9 +61,8 @@ public class User extends BaseEntity implements UserDetails {
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         // User 가 가지고 있는 권한 목록을 SimpleGrantedAuthority 로 변환
-        String roleName = "ROLE_";
         List<GrantedAuthority> authorities = new ArrayList<>();
-        authorities.add(new SimpleGrantedAuthority(roleName + this.role.name()));
+        authorities.add(new SimpleGrantedAuthority(this.role.name()));
         return authorities;
     }
 

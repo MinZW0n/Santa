@@ -26,11 +26,11 @@ public interface UserService {
     // Users read(관리자)
     Page<UserResponseDto> findAllUser(Pageable pageable);
 
-    UserResponseDto updateUser(Long id, UserUpdateRequestDto userUpdateRequestDto);
+    UserResponseDto updateUser(String email, UserUpdateRequestDto userUpdateRequestDto);
 
     String changePassword(String email, String oldPassword, String newPassword);
 
-//    String findPassword(String email, String newPassword);
+    String findPassword(String email, String newPassword);
 //    Page<UserMountainResponseDto> findAllUserMountains(Pageable pageable);
 
     Page<UserMountainResponseDto> findAllUserMountains(String email, Pageable pageable);

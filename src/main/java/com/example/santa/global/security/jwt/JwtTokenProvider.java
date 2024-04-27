@@ -31,9 +31,6 @@ public class JwtTokenProvider {
     * */
     private final Key key;
 
-    @Value("${jwt.secret}")
-    private String secretKey;
-
     // secret 값 가져와서 key 에 저장
     public JwtTokenProvider(@Value("${jwt.secret}") String secretKey) {
         byte[] keyBytes = Decoders.BASE64.decode(secretKey);
@@ -84,14 +81,14 @@ public class JwtTokenProvider {
             throw new RuntimeException("권한 정보가 없는 토큰입니다");
         }
 
-//        // claims 에서 권한정보 가져오기
-//        Collection<? extends GrantedAuthority> authorities = Arrays.stream(claims.get("auth").toString().split(","))
-//                .map(SimpleGrantedAuthority::new)
-//                .collect(Collectors.toList());
-        // test
-        Collection<? extends GrantedAuthority> authorities = List.of("user").stream()
+        // claims 에서 권한정보 가져오기
+        Collection<? extends GrantedAuthority> authorities = Arrays.stream(claims.get("auth").toString().split(","))
                 .map(SimpleGrantedAuthority::new)
                 .collect(Collectors.toList());
+//        // test
+//        Collection<? extends GrantedAuthority> authorities = List.of("user").stream()
+//                .map(SimpleGrantedAuthority::new)
+//                .collect(Collectors.toList());
 
         // UserDetails 객체를 만들어서 Authentication return
 //        UserDetails principal = new User(claims.getSubject(), "", authorities);

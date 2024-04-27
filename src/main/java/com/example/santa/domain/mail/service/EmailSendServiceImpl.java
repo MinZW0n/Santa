@@ -60,7 +60,7 @@ public class EmailSendServiceImpl implements EmailSendService {
     public String sendSimpleMessage(String to) throws MessagingException, UnsupportedEncodingException {
         MimeMessage message = createMessage(to);
         try {
-            // 유효시간 3분
+            // 유효시간 1분
             redisUtil.setDataExpire(authNumber, to, 60 * 1L);
             javaMailSender.send(message);
         } catch (MailException es) {
