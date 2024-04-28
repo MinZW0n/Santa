@@ -34,6 +34,7 @@ public class Meeting extends BaseEntity {
     @NotNull(message = "날짜를 입력하세요.")
     private LocalDate date;
     private String image;
+    private boolean end = false;
 
     @ManyToOne(fetch = FetchType.LAZY)
     private User leader;
