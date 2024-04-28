@@ -14,7 +14,7 @@ public interface UserMountainService {
     UserMountainResponseDto verifyAndCreateUserMountain(double latitude, double longitude, LocalDate climbDate, String email );
 
     UserMountainResponseDto verifyAndCreateUserMountain1(UserMountainVerifyRequestDto userMountainVerifyRequestDto,String email);
-    void updateProgress(String email, Long userMountainId);
+//    void updateProgress(String email, Long userMountainId);
 
 //    List<UserMountainResponseDto> getAllUserMountains();
 

@@ -103,7 +103,7 @@ public class UserMountainServiceImpl implements UserMountainService {
             userRepository.save(user);
 
             // UserChallenge 생성 후 호출
-            updateProgress(user.getEmail(), userMountain.getId());
+            userChallengeService.updateProgress(user.getEmail(), userMountain.getId());
 
             return userMountainResponseDtoMapper.toDto(userMountain);
             // UserChallenge 진행 상태 업데이트
@@ -113,41 +113,41 @@ public class UserMountainServiceImpl implements UserMountainService {
     }
 
 
-    public void updateProgress(String email, Long userMountainId) {
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new ServiceLogicException(ExceptionCode.USER_NOT_FOUND));
-        UserMountain userMountain = userMountainRepository.findById(userMountainId)
-                .orElseThrow(() -> new ServiceLogicException(ExceptionCode.USERMOUNTAIN_NOT_FOUND));
-        Category userMountainCategory = userMountain.getCategory();
-        List<Challenge> challenges = challengeRepository.findByCategoryName(userMountainCategory.getName());
-
-
-        for (Challenge challenge : challenges) {
-            UserChallenge userChallenge = userChallengeRepository.findByUserAndChallengeId(user, challenge.getId())
-                    .orElseGet(() -> {
-                        // 새로운 UserChallenge 생성
-                        UserChallenge newUserChallenge = UserChallenge.builder()
-                                .user(user)
-                                .challenge(challenge)
-                                .progress(0) // 초기 진행 상태는 0
-                                .build();
-                        return userChallengeRepository.save(newUserChallenge);
-                    });
-
-            // progress 증가
-            userChallenge.setProgress(userChallenge.getProgress() + 1);
-
-
-            // clearStandard와 progress가 일치하면 성공 처리
-            if (userChallenge.getProgress().equals(challenge.getClearStandard())) {
-                userChallenge.setIsCompleted(true);
-                userChallenge.setCompletionDate(LocalDate.now()); // 성공일자는 현재 날짜로 설정
-            }
-
-            userChallengeRepository.save(userChallenge);
-        }
-
-    }
+//    public void updateProgress(String email, Long userMountainId) {
+//        User user = userRepository.findByEmail(email)
+//                .orElseThrow(() -> new ServiceLogicException(ExceptionCode.USER_NOT_FOUND));
+//        UserMountain userMountain = userMountainRepository.findById(userMountainId)
+//                .orElseThrow(() -> new ServiceLogicException(ExceptionCode.USERMOUNTAIN_NOT_FOUND));
+//        Category userMountainCategory = userMountain.getCategory();
+//        List<Challenge> challenges = challengeRepository.findByCategoryName(userMountainCategory.getName());
+//
+//
+//        for (Challenge challenge : challenges) {
+//            UserChallenge userChallenge = userChallengeRepository.findByUserAndChallengeId(user, challenge.getId())
+//                    .orElseGet(() -> {
+//                        // 새로운 UserChallenge 생성
+//                        UserChallenge newUserChallenge = UserChallenge.builder()
+//                                .user(user)
+//                                .challenge(challenge)
+//                                .progress(0) // 초기 진행 상태는 0
+//                                .build();
+//                        return userChallengeRepository.save(newUserChallenge);
+//                    });
+//
+//            // progress 증가
+//            userChallenge.setProgress(userChallenge.getProgress() + 1);
+//
+//
+//            // clearStandard와 progress가 일치하면 성공 처리
+//            if (userChallenge.getProgress().equals(challenge.getClearStandard())) {
+//                userChallenge.setIsCompleted(true);
+//                userChallenge.setCompletionDate(LocalDate.now()); // 성공일자는 현재 날짜로 설정
+//            }
+//
+//            userChallengeRepository.save(userChallenge);
+//        }
+//
+//    }
 
     //오류발생
     @Override

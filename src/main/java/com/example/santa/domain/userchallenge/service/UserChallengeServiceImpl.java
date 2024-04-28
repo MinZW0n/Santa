@@ -55,9 +55,8 @@ public class UserChallengeServiceImpl implements UserChallengeService{
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new ServiceLogicException(ExceptionCode.USER_NOT_FOUND));
         UserMountain userMountain = userMountainRepository.findById(userMountainId)
-                .orElseThrow(() -> new IllegalArgumentException("유저 마운틴을 찾을 수 없습니다."));
+                .orElseThrow(() -> new ServiceLogicException(ExceptionCode.USERMOUNTAIN_NOT_FOUND));
         Category userMountainCategory = userMountain.getCategory();
-
         List<Challenge> challenges = challengeRepository.findByCategoryName(userMountainCategory.getName());
 
 
@@ -72,10 +71,10 @@ public class UserChallengeServiceImpl implements UserChallengeService{
                                 .build();
                         return userChallengeRepository.save(newUserChallenge);
                     });
-            log.info("userChallenge {}", userChallenge);
 
             // progress 증가
             userChallenge.setProgress(userChallenge.getProgress() + 1);
+
 
             // clearStandard와 progress가 일치하면 성공 처리
             if (userChallenge.getProgress().equals(challenge.getClearStandard())) {
@@ -87,6 +86,8 @@ public class UserChallengeServiceImpl implements UserChallengeService{
         }
 
     }
+
+
 
     @Transactional
     public void updateUserChallengeOnMeetingJoin(Long meetingId,Long userId) {
