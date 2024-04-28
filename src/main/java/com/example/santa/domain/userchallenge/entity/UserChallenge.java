@@ -38,6 +38,8 @@ public class UserChallenge {
     @JoinColumn(name = "user_id")
     private User user;
 
+}
+
 //    @ManyToOne
 //    @JoinColumn(name = "userMountain_id")
 //    private UserMountain userMountain;
@@ -45,5 +47,3 @@ public class UserChallenge {
 //    @ManyToOne
 //    @JoinColumn(name = "category_id")
 //    private Category category;
-
-}
