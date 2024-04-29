@@ -1,5 +1,12 @@
 package com.example.santa.domain.user.service;
 
+import com.example.santa.domain.category.entity.Category;
+import com.example.santa.domain.category.repository.CategoryRepository;
+import com.example.santa.domain.preferredcategory.dto.CategoriesRequestDto;
+import com.example.santa.domain.preferredcategory.dto.PreferredCategoryRequestDto;
+import com.example.santa.domain.preferredcategory.dto.PreferredCategoryResponseDto;
+import com.example.santa.domain.preferredcategory.entity.PreferredCategory;
+import com.example.santa.domain.preferredcategory.repository.PreferredCategoryRepository;
 import com.example.santa.domain.user.dto.UserResponseDto;
 import com.example.santa.domain.user.dto.UserSignInRequestDto;
 import com.example.santa.domain.user.dto.UserSignupRequestDto;
@@ -17,6 +24,7 @@ import com.example.santa.global.exception.ExceptionCode;
 import com.example.santa.global.exception.ServiceLogicException;
 import com.example.santa.global.security.jwt.JwtToken;
 import com.example.santa.global.security.jwt.JwtTokenProvider;
+import com.example.santa.global.util.mapsturct.PreferredCategoryResponseDtoMapper;
 import com.example.santa.global.util.mapsturct.UserChallengeCompletionResponseMapper;
 import com.example.santa.global.util.mapsturct.UserMountainResponseDtoMapper;
 import com.example.santa.global.util.mapsturct.UserResponseDtoMapper;
@@ -29,12 +37,15 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Slf4j
-@Transactional(readOnly = true)
+@Transactional
 @RequiredArgsConstructor
 @Service
 public class UserServiceImpl implements UserService {
@@ -42,8 +53,11 @@ public class UserServiceImpl implements UserService {
     private final UserResponseDtoMapper userResponseDtoMapper;
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private final JwtTokenProvider jwtTokenProvider;
+    private final PreferredCategoryRepository preferredCategoryRepository;
+    private final CategoryRepository categoryRepository;
 
     private final UserMountainResponseDtoMapper userMountainResponseDtoMapper;
+    private final PreferredCategoryResponseDtoMapper preferredCategoryResponseDtoMapper;
     private final UserChallengeCompletionResponseMapper userChallengeCompletionResponseMapperResponseMapper;
 
 
@@ -99,10 +113,17 @@ public class UserServiceImpl implements UserService {
         return jwtToken;
     }
 
+    @Transactional
+    @Override
+    public String generateAccessToken(String refreshToken) {
+        return jwtTokenProvider.generateAccessTokenFromRefreshToken(refreshToken);
+    }
+
     @Override
     public UserResponseDto findUserByEmail(String email) {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new ServiceLogicException(ExceptionCode.USER_NOT_FOUND));
+        log.info("role {}", user.getRole());
         UserResponseDto dto = userResponseDtoMapper.toDto(user);
         log.info("dto = {}", dto);
         return dto;
@@ -170,7 +191,74 @@ public class UserServiceImpl implements UserService {
         return user.getEmail();
     }
 
+    @Transactional
+    @Override
+    public Long savePreferredCategory(String email, PreferredCategoryRequestDto preferredCategoryRequestDto) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new ServiceLogicException(ExceptionCode.USER_NOT_FOUND));
+        Category category = categoryRepository.findById(preferredCategoryRequestDto.getCategoryId())
+                .orElseThrow(() -> new ServiceLogicException(ExceptionCode.CATEGORY_NOT_FOUND));
+        PreferredCategory save = preferredCategoryRepository.save(PreferredCategory.builder()
+                .user(user)
+                .category(category)
+                .build());
+        return save.getId();
+    }
 
+    @Transactional
+    @Override
+    public List<Long> savePreferredCategories(String email, List<Long> categoryIds) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new ServiceLogicException(ExceptionCode.USER_NOT_FOUND));
+
+//        List<Long> createdPreferredCategories = new ArrayList<>();
+
+//        for (Long categoryId : categoryIds) {
+//            Category category = categoryRepository.findById(categoryId)
+//                    .orElseThrow(() -> new ServiceLogicException(ExceptionCode.CATEGORY_NOT_FOUND));
+//            PreferredCategory preferredCategory = PreferredCategory.builder()
+//                    .user(user)
+//                    .category(category)
+//                    .build();
+//            PreferredCategory saved = preferredCategoryRepository.save(preferredCategory);
+//            createdPreferredCategories.add(saved.getId());
+//        }
+
+//        categoryIds.forEach((id) -> {
+//            PreferredCategory save = preferredCategoryRepository.save(PreferredCategory.builder()
+//                    .user(user)
+//                    .category(categoryRepository.findById(id).orElseThrow(() -> new ServiceLogicException(ExceptionCode.CATEGORY_NOT_FOUND)))
+//                    .build());
+//            createdPreferredCategories.add(save.getId());
+//        });
+        List<Long> createdPreferredCategories =
+                categoryIds.stream().map((id) ->
+                        preferredCategoryRepository.save(
+                                PreferredCategory.builder()
+                                        .user(user)
+                                        .category(categoryRepository.findById(id).orElseThrow(() -> new ServiceLogicException(ExceptionCode.CATEGORY_NOT_FOUND)))
+                                        .build()).getId()).toList();
+
+        return createdPreferredCategories;
+    }
+
+    @Override
+    public List<PreferredCategoryResponseDto> findAllPreferredCategories(String email) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new ServiceLogicException(ExceptionCode.USER_NOT_FOUND));
+        List<PreferredCategory> allByUserId = preferredCategoryRepository.findAllByUserId(user.getId());
+        List<PreferredCategoryResponseDto> dtoList = preferredCategoryResponseDtoMapper.toDtoList(allByUserId);
+        return dtoList;
+    }
+
+    @Transactional
+    @Override
+    public void deleteAllPreferredCategory(String email) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new ServiceLogicException(ExceptionCode.USER_NOT_FOUND));
+        List<PreferredCategory> allByUserId = preferredCategoryRepository.findAllByUserId(user.getId());
+        preferredCategoryRepository.deleteAll(allByUserId);
+    }
 }
 
 

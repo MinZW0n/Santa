@@ -1,5 +1,8 @@
 package com.example.santa.domain.user.service;
 
+import com.example.santa.domain.preferredcategory.dto.CategoriesRequestDto;
+import com.example.santa.domain.preferredcategory.dto.PreferredCategoryRequestDto;
+import com.example.santa.domain.preferredcategory.dto.PreferredCategoryResponseDto;
 import com.example.santa.domain.user.dto.UserResponseDto;
 import com.example.santa.domain.user.dto.UserSignInRequestDto;
 import com.example.santa.domain.user.dto.UserSignupRequestDto;
@@ -22,6 +25,9 @@ public interface UserService {
     Boolean checkNicknameDuplicate(String nickname);
     // login
     JwtToken signIn(UserSignInRequestDto userSignInRequestDto);
+
+    // refreshToken 으로 accessToken 재발급
+    String generateAccessToken(String refreshToken);
     // read
     UserResponseDto findUserByEmail(String email);
 
@@ -38,5 +44,14 @@ public interface UserService {
     Page<UserMountainResponseDto> findAllUserMountains(String email, Pageable pageable);
 
     Page<UserChallengeCompletionResponseDto> findChallengesByCompletion(String email, boolean completion, Pageable pageable);
+
+    // 선호카테고리 생성
+    Long savePreferredCategory(String email, PreferredCategoryRequestDto preferredCategoryRequestDto);
+
+    List<Long> savePreferredCategories(String email, List<Long> categoryIds);
+    // 선호카테고리 전체조회
+    List<PreferredCategoryResponseDto> findAllPreferredCategories(String email);
+
+    // 선호카테고리 전체삭제
+    void deleteAllPreferredCategory(String email);
 }
-//    Page<UserChallengeCompletionResponseDto> findCompletedChallenges(String email,Pageable pageable);

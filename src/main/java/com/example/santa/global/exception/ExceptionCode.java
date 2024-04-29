@@ -16,8 +16,10 @@ public enum ExceptionCode {
     ALREADY_PARTICIPATING(HttpStatus.CONFLICT, "이미 참여중인 모임입니다" ),
     ALREADY_PARTICIPATING_ON_DATE(HttpStatus.CONFLICT, "참여중인 날짜입니다." ),
     USERMOUNTAIN_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 유저 등산 정보입니다."),
-    ALREADY_USERMOUNTAIN_ON_DATE(HttpStatus.CONFLICT, "이미 같은 날에 이 산에 대한 인증이 존재합니다.");
-
+    ALREADY_USERMOUNTAIN_ON_DATE(HttpStatus.CONFLICT, "이미 같은 날에 이 산에 대한 인증이 존재합니다."),
+    INVALID_JWT_TOKEN(HttpStatus.valueOf(403), "알수없는 형식에 JWT token 입니다."),
+    EXPIRED_JWT_TOKEN(HttpStatus.valueOf(401), "JWT 토큰의 유효기간이 만료되었습니다"),
+    UNSUPPORTED_JWT_TOKEN(HttpStatus.valueOf(403), "JWT 가 서버에서 지원하지않는 유형입니다.");
 
     private final HttpStatus status;
     private final String message;

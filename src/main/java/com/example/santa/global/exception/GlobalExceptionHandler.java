@@ -20,6 +20,11 @@ public class GlobalExceptionHandler {
         ErrorResponse errorResponse = new ErrorResponse(code.getStatus(), ex.getMessage());
         return new ResponseEntity<>(errorResponse, code.getStatus());
     }
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<Object> handleIllegalArgumentException(IllegalArgumentException ex) {
+        ErrorResponse errorResponse = new ErrorResponse(HttpStatus.BAD_REQUEST, ex.getMessage());
+        return new ResponseEntity<>(errorResponse, errorResponse.getStatus());
+    }
 
     // ErrorResponse 클래스 (내부 클래스로 정의)
     @Getter
