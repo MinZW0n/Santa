@@ -5,8 +5,11 @@ import com.example.santa.domain.mail.dto.EmailRequestDto;
 import com.example.santa.domain.mail.service.EmailSendService;
 import com.example.santa.domain.user.dto.*;
 import com.example.santa.domain.user.service.UserService;
+import com.example.santa.domain.userchallenge.dto.UserChallengeCompletionResponseDto;
+import com.example.santa.domain.userchallenge.entity.UserChallenge;
 import com.example.santa.domain.usermountain.dto.UserMountainResponseDto;
 import com.example.santa.global.security.jwt.JwtToken;
+import com.example.santa.global.util.mapsturct.UserChallengeCompletionResponseMapper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -24,6 +27,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.UnsupportedEncodingException;
+import java.util.List;
 
 @RequestMapping("/api/users")
 @RestController
@@ -165,6 +169,20 @@ public class UserController {
             , @RequestParam(name = "page", defaultValue = "0") Integer page) {
         Page<UserMountainResponseDto> allUserMountains = userService.findAllUserMountains(email, PageRequest.of(page, size));
         return ResponseEntity.ok(allUserMountains);
+    }
+
+
+    @GetMapping("/completion")
+    @Operation(summary = "완료 OR 진행/시작 업적 전체 조회", description = "완료 OR 진행/시작 업적 전체 조회")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = UserResponseDto.class))),
+            @ApiResponse(responseCode = "500", description = "에러", content = @Content(schema = @Schema(implementation = UserResponseDto.class)))})
+    public ResponseEntity<Page<UserChallengeCompletionResponseDto>> getAllUserCompletions(@AuthenticationPrincipal String email
+            , @RequestParam(name = "completion") boolean completion
+            , @RequestParam(name = "size", defaultValue = "5") Integer size
+            , @RequestParam(name = "page", defaultValue = "0") Integer page) {
+        Page<UserChallengeCompletionResponseDto> allUserCompletions = userService.findChallengesByCompletion(email, completion, PageRequest.of(page, size));
+        return ResponseEntity.ok(allUserCompletions);
     }
 
 }

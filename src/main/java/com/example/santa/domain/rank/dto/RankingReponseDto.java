@@ -12,6 +12,7 @@ import lombok.Setter;
 @NoArgsConstructor
 public class RankingReponseDto {
 
+    private Long id;
     private Long rank;
     private String nickname;
     private Integer score;

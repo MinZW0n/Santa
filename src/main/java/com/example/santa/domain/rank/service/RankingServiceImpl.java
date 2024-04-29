@@ -52,7 +52,7 @@ public class RankingServiceImpl implements RankingService{
         long rank = 1;
         for (Ranking ranking : rankings) {
             // 현재 순위, 사용자 이름, 점수를 이용하여 새로운 객체 생성
-            rankingDtos.add(new RankingReponseDto(rank++, ranking.getUser().getName(), ranking.getScore()));
+            rankingDtos.add(new RankingReponseDto(rank++, ranking.getId(),ranking.getUser().getName(), ranking.getScore()));
         }
         return rankingDtos;
     }
