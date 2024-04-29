@@ -34,7 +34,7 @@ public class Password {
 
     }
 
-    public void findPassword(final String newRawPassword) {
+    public void resetPassword(final String newRawPassword) {
         this.encodePassword = encodePassword(newRawPassword);
     }
 

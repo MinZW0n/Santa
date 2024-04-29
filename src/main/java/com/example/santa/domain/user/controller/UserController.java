@@ -13,19 +13,14 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.mail.MessagingException;
-import jakarta.persistence.EntityExistsException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.UnsupportedEncodingException;
@@ -137,7 +132,7 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK).body(updateUser);
     }
 
-    @PatchMapping("/change-password")
+    @PatchMapping("/passwords")
     @Operation(summary = "비밀번호 수정", description = "비밀번호 수정")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "성공", content = @Content(schema = @Schema(implementation = Long.class))),
@@ -149,14 +144,14 @@ public class UserController {
     }
 
 //     비밀번호 찾기 시 인증 이메일 보내고 인증완료 시 새로운 비밀번호 입력
-    @PostMapping("/find-password")
+    @PostMapping("/reset-passwords")
     @Operation(summary = "비밀번호 찾기", description = "비밀번호 칮기")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "성공", content = @Content(schema = @Schema(implementation = Long.class))),
             @ApiResponse(responseCode = "500", description = "에러", content = @Content(schema = @Schema(implementation = Long.class)))})
-    public ResponseEntity<String> findPassword(@RequestBody @Valid PasswordFindRequestDto passwordFindRequestDto) {
-        String findPassword = userService.findPassword(passwordFindRequestDto.getEmail(), passwordFindRequestDto.getNewPassword());
-        return ResponseEntity.status(HttpStatus.OK).body(findPassword);
+    public ResponseEntity<String> resetPassword(@RequestBody @Valid PasswordResetRequestDto passwordResetRequestDto) {
+        String resetPassword = userService.resetPassword(passwordResetRequestDto.getEmail(), passwordResetRequestDto.getNewPassword());
+        return ResponseEntity.status(HttpStatus.OK).body(resetPassword);
     }
 
     //유저 마운틴 전체조회
@@ -171,7 +166,5 @@ public class UserController {
         Page<UserMountainResponseDto> allUserMountains = userService.findAllUserMountains(email, PageRequest.of(page, size));
         return ResponseEntity.ok(allUserMountains);
     }
-
-
 
 }

@@ -10,7 +10,6 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class UserUpdateRequestDto {
-    private String name;
     private String nickname;
     private String phoneNumber;
     private String image;

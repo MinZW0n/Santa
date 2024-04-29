@@ -30,7 +30,7 @@ public interface UserService {
 
     String changePassword(String email, String oldPassword, String newPassword);
 
-    String findPassword(String email, String newPassword);
+    String resetPassword(String email, String newPassword);
 //    Page<UserMountainResponseDto> findAllUserMountains(Pageable pageable);
 
     Page<UserMountainResponseDto> findAllUserMountains(String email, Pageable pageable);

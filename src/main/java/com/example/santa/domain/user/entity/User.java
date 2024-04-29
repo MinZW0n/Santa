@@ -50,8 +50,7 @@ public class User extends BaseEntity implements UserDetails {
         this.role = role;
     }
 
-    public User update(String name, String nickname, String phoneNumber, String image) {
-        this.name = name;
+    public User update(String nickname, String phoneNumber, String image) {
         this.nickname = nickname;
         this.phoneNumber = phoneNumber;
         this.image = image;
