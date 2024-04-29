@@ -15,7 +15,6 @@ import java.time.LocalDate;
 @NoArgsConstructor
 public class UserChallengeCompletionResponseDto {
     private LocalDate completionDate;
-
+    private Integer progress;
     private ChallengeNameResponseDto challenge;
-
 }
