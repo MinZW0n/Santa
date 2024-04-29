@@ -16,7 +16,7 @@ import java.util.Map;
 
 @RestController
 @CrossOrigin(origins = {"http://localhost:5173", "http://localhost:5173/"})
-@RequestMapping("/meetings")
+@RequestMapping("/api/meetings")
 public class MeetingController {
 
     private final MeetingService meetingService;
@@ -90,9 +90,9 @@ public class MeetingController {
                                               @RequestParam(name = "size", defaultValue = "5") int size) {
         if (tagName != null) {
             return ResponseEntity.ok(meetingService.getMeetingsByTagNameNoOffset(tagName, lastId, size));
-        } else {
-            return ResponseEntity.badRequest().build();
         }
+        return ResponseEntity.badRequest().build();
+
     }
 
 
@@ -110,9 +110,9 @@ public class MeetingController {
                                                        @RequestParam(name = "size", defaultValue = "5") int size) {
         if (category != null) {
             return ResponseEntity.ok(meetingService.getMeetingsByCategoryNameNoOffset(category, lastId, size));
-        } else {
-            return ResponseEntity.badRequest().build();
         }
+        return ResponseEntity.badRequest().build();
+
     }
 
 //    @GetMapping("/participants")
