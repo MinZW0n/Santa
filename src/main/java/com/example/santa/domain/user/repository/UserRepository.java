@@ -31,8 +31,9 @@ public interface UserRepository extends JpaRepository<User, Long> {
     @Query("SELECT uc FROM UserChallenges uc WHERE uc.user.id = :userid AND uc.isCompleted = true")
     Page<UserChallenge> findByUserIdAndIsCompletedTrue(Long userid,Pageable pageable);
 
-    @Query("SELECT uc FROM UserChallenges uc WHERE uc.user.id = :userid AND uc.isCompleted = false")
-    Page<UserChallenge> findByUserIdAndIsCompletedFalse(Long userid,Pageable pageable);
+    @Query("SELECT uc FROM UserChallenges uc WHERE uc.user.id = :userid AND uc.isCompleted IS NULL")
+    Page<UserChallenge> findByUserIdAndIsCompletedNull(Long userid,Pageable pageable);
+
 
 
 

@@ -220,7 +220,7 @@ public class UserController {
     }
 
     @GetMapping("/completion")
-    @Operation(summary = "완료 OR 진행/시작 업적 전체 조회", description = "완료 OR 진행/시작 업적 전체 조회")
+    @Operation(summary = "완료(true)/진행 중 업적(false) 조회", description = "완료(true)/진행 중 업적(false) 조회")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = UserResponseDto.class))),
             @ApiResponse(responseCode = "500", description = "에러", content = @Content(schema = @Schema(implementation = UserResponseDto.class)))})

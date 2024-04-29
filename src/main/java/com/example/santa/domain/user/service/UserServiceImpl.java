@@ -176,7 +176,7 @@ public class UserServiceImpl implements UserService {
             completionDto = userRepository.findByUserIdAndIsCompletedTrue(byEmail.getId(), pageable)
                     .map(userChallengeCompletionResponseMapperResponseMapper::toDto);
         } else {
-            completionDto = userRepository.findByUserIdAndIsCompletedFalse(byEmail.getId(), pageable)
+            completionDto = userRepository.findByUserIdAndIsCompletedNull(byEmail.getId(), pageable)
                     .map(userChallengeCompletionResponseMapperResponseMapper::toDto);
         }
         return completionDto;
