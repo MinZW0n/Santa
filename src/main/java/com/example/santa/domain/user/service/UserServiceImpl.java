@@ -2,12 +2,11 @@ package com.example.santa.domain.user.service;
 
 import com.example.santa.domain.category.entity.Category;
 import com.example.santa.domain.category.repository.CategoryRepository;
-import com.example.santa.domain.preferredcategory.dto.CategoriesRequestDto;
 import com.example.santa.domain.preferredcategory.dto.PreferredCategoryRequestDto;
 import com.example.santa.domain.preferredcategory.dto.PreferredCategoryResponseDto;
 import com.example.santa.domain.preferredcategory.entity.PreferredCategory;
 import com.example.santa.domain.preferredcategory.repository.PreferredCategoryRepository;
-import com.example.santa.domain.rank.dto.RankingReponseDto;
+import com.example.santa.domain.rank.dto.RankingResponseDto;
 import com.example.santa.domain.rank.entity.Ranking;
 import com.example.santa.domain.rank.repository.RankingRepository;
 import com.example.santa.domain.user.dto.UserResponseDto;
@@ -19,10 +18,8 @@ import com.example.santa.domain.user.entity.Role;
 import com.example.santa.domain.user.entity.User;
 import com.example.santa.domain.user.repository.UserRepository;
 import com.example.santa.domain.userchallenge.dto.UserChallengeCompletionResponseDto;
-import com.example.santa.domain.userchallenge.entity.UserChallenge;
 import com.example.santa.domain.userchallenge.repository.UserChallengeRepository;
 import com.example.santa.domain.usermountain.dto.UserMountainResponseDto;
-import com.example.santa.domain.usermountain.entity.UserMountain;
 import com.example.santa.global.exception.ExceptionCode;
 import com.example.santa.global.exception.ServiceLogicException;
 import com.example.santa.global.security.jwt.JwtToken;
@@ -40,12 +37,7 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
-
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Transactional
@@ -187,14 +179,14 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public RankingReponseDto getIndividualRanking(String email) {
+    public RankingResponseDto getIndividualRanking(String email) {
         // 전체 랭킹 목록을 점수 내림차순으로 가져옵니다.
         List<Ranking> rankings = rankingRepository.findAllByOrderByScoreDesc();
         long rank = 1;
         for (Ranking ranking : rankings) {
             if (ranking.getUser().getEmail().equals(email)) {
                 // 해당 사용자의 랭킹 정보를 반환합니다.
-                return new RankingReponseDto(rank, ranking.getId(), ranking.getUser().getNickname(), ranking.getUser().getImage(), ranking.getScore());
+                return new RankingResponseDto(rank,ranking.getUser().getNickname(), ranking.getUser().getImage(), ranking.getScore());
             }
             rank++;
         }

@@ -5,17 +5,13 @@ import com.example.santa.domain.mail.dto.EmailCheckDto;
 import com.example.santa.domain.mail.dto.EmailRequestDto;
 import com.example.santa.domain.mail.service.EmailSendService;
 import com.example.santa.domain.preferredcategory.dto.CategoriesRequestDto;
-import com.example.santa.domain.preferredcategory.dto.PreferredCategoryRequestDto;
 import com.example.santa.domain.preferredcategory.dto.PreferredCategoryResponseDto;
-import com.example.santa.domain.rank.dto.RankingReponseDto;
-import com.example.santa.domain.rank.service.RankingService;
+import com.example.santa.domain.rank.dto.RankingResponseDto;
 import com.example.santa.domain.user.dto.*;
 import com.example.santa.domain.user.service.UserService;
 import com.example.santa.domain.userchallenge.dto.UserChallengeCompletionResponseDto;
-import com.example.santa.domain.userchallenge.entity.UserChallenge;
 import com.example.santa.domain.usermountain.dto.UserMountainResponseDto;
 import com.example.santa.global.security.jwt.JwtToken;
-import com.example.santa.global.util.mapsturct.UserChallengeCompletionResponseMapper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -240,8 +236,8 @@ public class UserController {
             @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = ChallengeResponseDto.class))),
             @ApiResponse(responseCode = "500", description = "에러", content = @Content(schema = @Schema(implementation = ChallengeResponseDto.class)))})
     @GetMapping("/ranking")
-    public ResponseEntity<RankingReponseDto> getIndividualRanking(@AuthenticationPrincipal String email) {
-        RankingReponseDto rankingDto = userService.getIndividualRanking(email);
+    public ResponseEntity<RankingResponseDto> getIndividualRanking(@AuthenticationPrincipal String email) {
+        RankingResponseDto rankingDto = userService.getIndividualRanking(email);
         return ResponseEntity.ok(rankingDto);
     }
 

@@ -1,6 +1,6 @@
 package com.example.santa.domain.rank.service;
 
-import com.example.santa.domain.rank.dto.RankingReponseDto;
+import com.example.santa.domain.rank.dto.RankingResponseDto;
 import com.example.santa.domain.rank.entity.Ranking;
 import com.example.santa.domain.rank.repository.RankingRepository;
 import com.example.santa.domain.user.entity.User;
@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class RankingServiceImpl implements RankingService{
@@ -44,18 +45,26 @@ public class RankingServiceImpl implements RankingService{
     }
 
     @Override
-    public List<RankingReponseDto> getRankingOrderedByScore() {
+    public List<RankingResponseDto> getRankingOrderedByScore() {
         List<Ranking> rankings = rankingRepository.findAllByOrderByScoreDesc();
         // Ranking 정보를 담을 객체를 저장할 리스트 생성.
-        List<RankingReponseDto> rankingDtos = new ArrayList<>();
+        List<RankingResponseDto> rankingDtos = new ArrayList<>();
         // 순위 표시 변수
         long rank = 1;
         for (Ranking ranking : rankings) {
-            // 현재 순위, 사용자 이름, 점수를 이용하여 새로운 객체 생성
-            rankingDtos.add(new RankingReponseDto(rank++, ranking.getId(),ranking.getUser().getNickname(), ranking.getUser().getImage(),ranking.getScore()));
+            // 여기에서 rank와 id의 순서를 맞게 조정
+            rankingDtos.add(new RankingResponseDto(rank++, ranking.getUser().getNickname(), ranking.getUser().getImage(), ranking.getScore()));
         }
         return rankingDtos;
     }
 
+    @Override
+    public Optional<RankingResponseDto> getRankingByEmail(String email) {
+        Optional<Ranking> ranking = rankingRepository.findByUserEmail(email);
+        //Required type: Long
+        //Provided: int
+        return ranking.map(r -> new RankingResponseDto((long) (rankingRepository.countByScoreGreaterThan(r.getScore()) + 2), r.getUser().getNickname(), r.getUser().getImage(), r.getScore()));
+
+    }
 
 }
