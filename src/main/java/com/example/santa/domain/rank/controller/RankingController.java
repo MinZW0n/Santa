@@ -9,6 +9,9 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -31,10 +34,10 @@ public class RankingController {
             @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = ChallengeResponseDto.class))),
             @ApiResponse(responseCode = "500", description = "에러", content = @Content(schema = @Schema(implementation = ChallengeResponseDto.class)))})
     @GetMapping
-    public ResponseEntity<List<RankingResponseDto>> getAllRanksDto() {
-        List<RankingResponseDto> ranking = rankingService.getRankingOrderedByScore();
-
-        return ResponseEntity.ok(ranking);
+    public ResponseEntity<Page<RankingResponseDto>> getAllRanksDto(@RequestParam(defaultValue = "0") int page,
+                                                                   @RequestParam(defaultValue = "10") int size) {
+        Page<RankingResponseDto> rankingPage = rankingService.getRankingOrderedByScore(PageRequest.of(page, size, Sort.by("score").descending()));
+        return ResponseEntity.ok(rankingPage);
     }
 
     @Operation(summary = "랭킹 조회 기능(+사용자의 랭킹도 따로 보이도록)", description = "랭킹 조회 기능(+사용자의 랭킹도 따로 보이도록)")
@@ -42,8 +45,12 @@ public class RankingController {
             @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = ChallengeResponseDto.class))),
             @ApiResponse(responseCode = "500", description = "에러", content = @Content(schema = @Schema(implementation = ChallengeResponseDto.class)))})
     @GetMapping("/rankings")
-    public ResponseEntity<Map<String, Object>> getAllRanksDto(@AuthenticationPrincipal String email) {
-        List<RankingResponseDto> rankingList = rankingService.getRankingOrderedByScore();
+    public ResponseEntity<Map<String, Object>> getAllRanksDtoWithUserRanking(
+            @AuthenticationPrincipal String email,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size)  {
+
+        Page<RankingResponseDto> rankingList = rankingService.getRankingOrderedByScore(PageRequest.of(page, size, Sort.by("score").descending()));
         Optional<RankingResponseDto> userRanking = rankingService.getRankingByEmail(email);
 
         Map<String, Object> response = new HashMap<>();

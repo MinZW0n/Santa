@@ -7,6 +7,10 @@ import com.example.santa.domain.user.entity.User;
 import com.example.santa.domain.user.repository.UserRepository;
 import com.example.santa.domain.userchallenge.repository.UserChallengeRepository;
 import jakarta.transaction.Transactional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
@@ -44,18 +48,15 @@ public class RankingServiceImpl implements RankingService{
         }
     }
 
-    @Override
-    public List<RankingResponseDto> getRankingOrderedByScore() {
-        List<Ranking> rankings = rankingRepository.findAllByOrderByScoreDesc();
-        // Ranking 정보를 담을 객체를 저장할 리스트 생성.
-        List<RankingResponseDto> rankingDtos = new ArrayList<>();
-        // 순위 표시 변수
-        long rank = 1;
-        for (Ranking ranking : rankings) {
-            // 여기에서 rank와 id의 순서를 맞게 조정
-            rankingDtos.add(new RankingResponseDto(rank++, ranking.getUser().getNickname(), ranking.getUser().getImage(), ranking.getScore()));
-        }
-        return rankingDtos;
+    public Page<RankingResponseDto> getRankingOrderedByScore(Pageable pageable) {
+        Page<Ranking> rankingsPage = rankingRepository.findAllByOrderByScoreDesc(pageable);
+
+        return rankingsPage.map(ranking -> new RankingResponseDto(
+                (long) (rankingRepository.countByScoreGreaterThan(ranking.getScore()) + 1),
+                ranking.getUser().getNickname(),
+                ranking.getUser().getImage(),
+                ranking.getScore()
+        ));
     }
 
     @Override
@@ -63,7 +64,7 @@ public class RankingServiceImpl implements RankingService{
         Optional<Ranking> ranking = rankingRepository.findByUserEmail(email);
         //Required type: Long
         //Provided: int
-        return ranking.map(r -> new RankingResponseDto((long) (rankingRepository.countByScoreGreaterThan(r.getScore()) + 2), r.getUser().getNickname(), r.getUser().getImage(), r.getScore()));
+        return ranking.map(r -> new RankingResponseDto((long) (rankingRepository.countByScoreGreaterThan(r.getScore()) + 1), r.getUser().getNickname(), r.getUser().getImage(), r.getScore()));
 
     }
 
