@@ -65,8 +65,13 @@ public class RankingServiceImpl implements RankingService{
         Optional<Ranking> ranking = rankingRepository.findByUserEmail(email);
         //Required type: Long
         //Provided: int
-        return ranking.map(r -> new RankingResponseDto((long) (rankingRepository.countByScoreGreaterThan(r.getScore()) + 1), r.getId(), r.getUser().getNickname(), r.getUser().getImage(), r.getScore()));
-
+        return ranking.map(r -> new RankingResponseDto(
+                r.getId(),
+                (long) (rankingRepository.countByScoreGreaterThan(r.getScore()) + 1),
+                r.getUser().getNickname(),
+                r.getUser().getImage(),
+                r.getScore()
+        ));
     }
 
 }
