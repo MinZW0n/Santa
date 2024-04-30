@@ -7,6 +7,9 @@ import com.example.santa.domain.preferredcategory.dto.PreferredCategoryRequestDt
 import com.example.santa.domain.preferredcategory.dto.PreferredCategoryResponseDto;
 import com.example.santa.domain.preferredcategory.entity.PreferredCategory;
 import com.example.santa.domain.preferredcategory.repository.PreferredCategoryRepository;
+import com.example.santa.domain.rank.dto.RankingReponseDto;
+import com.example.santa.domain.rank.entity.Ranking;
+import com.example.santa.domain.rank.repository.RankingRepository;
 import com.example.santa.domain.user.dto.UserResponseDto;
 import com.example.santa.domain.user.dto.UserSignInRequestDto;
 import com.example.santa.domain.user.dto.UserSignupRequestDto;
@@ -55,6 +58,7 @@ public class UserServiceImpl implements UserService {
     private final JwtTokenProvider jwtTokenProvider;
     private final PreferredCategoryRepository preferredCategoryRepository;
     private final CategoryRepository categoryRepository;
+    private final RankingRepository rankingRepository;
 
     private final UserMountainResponseDtoMapper userMountainResponseDtoMapper;
     private final PreferredCategoryResponseDtoMapper preferredCategoryResponseDtoMapper;
@@ -180,6 +184,22 @@ public class UserServiceImpl implements UserService {
                     .map(userChallengeCompletionResponseMapperResponseMapper::toDto);
         }
         return completionDto;
+    }
+
+    @Override
+    public RankingReponseDto getIndividualRanking(String email) {
+        // 전체 랭킹 목록을 점수 내림차순으로 가져옵니다.
+        List<Ranking> rankings = rankingRepository.findAllByOrderByScoreDesc();
+        long rank = 1;
+        for (Ranking ranking : rankings) {
+            if (ranking.getUser().getEmail().equals(email)) {
+                // 해당 사용자의 랭킹 정보를 반환합니다.
+                return new RankingReponseDto(rank, ranking.getId(), ranking.getUser().getNickname(), ranking.getUser().getImage(), ranking.getScore());
+            }
+            rank++;
+        }
+        // 사용자의 랭킹 정보가 없을 경우 예외 처리나 null 반환 등의 로직이 필요
+        throw new RuntimeException("User ranking not found");
     }
 
 

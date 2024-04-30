@@ -3,6 +3,7 @@ package com.example.santa.domain.user.service;
 import com.example.santa.domain.preferredcategory.dto.CategoriesRequestDto;
 import com.example.santa.domain.preferredcategory.dto.PreferredCategoryRequestDto;
 import com.example.santa.domain.preferredcategory.dto.PreferredCategoryResponseDto;
+import com.example.santa.domain.rank.dto.RankingReponseDto;
 import com.example.santa.domain.user.dto.UserResponseDto;
 import com.example.santa.domain.user.dto.UserSignInRequestDto;
 import com.example.santa.domain.user.dto.UserSignupRequestDto;
@@ -44,6 +45,9 @@ public interface UserService {
     Page<UserMountainResponseDto> findAllUserMountains(String email, Pageable pageable);
 
     Page<UserChallengeCompletionResponseDto> findChallengesByCompletion(String email, boolean completion, Pageable pageable);
+
+    //개인 랭킹 조회
+    RankingReponseDto getIndividualRanking(String email);
 
     // 선호카테고리 생성
     Long savePreferredCategory(String email, PreferredCategoryRequestDto preferredCategoryRequestDto);

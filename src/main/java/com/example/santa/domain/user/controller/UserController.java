@@ -1,11 +1,14 @@
 package com.example.santa.domain.user.controller;
 
+import com.example.santa.domain.challege.dto.ChallengeResponseDto;
 import com.example.santa.domain.mail.dto.EmailCheckDto;
 import com.example.santa.domain.mail.dto.EmailRequestDto;
 import com.example.santa.domain.mail.service.EmailSendService;
 import com.example.santa.domain.preferredcategory.dto.CategoriesRequestDto;
 import com.example.santa.domain.preferredcategory.dto.PreferredCategoryRequestDto;
 import com.example.santa.domain.preferredcategory.dto.PreferredCategoryResponseDto;
+import com.example.santa.domain.rank.dto.RankingReponseDto;
+import com.example.santa.domain.rank.service.RankingService;
 import com.example.santa.domain.user.dto.*;
 import com.example.santa.domain.user.service.UserService;
 import com.example.santa.domain.userchallenge.dto.UserChallengeCompletionResponseDto;
@@ -230,6 +233,16 @@ public class UserController {
             , @RequestParam(name = "page", defaultValue = "0") Integer page) {
         Page<UserChallengeCompletionResponseDto> allUserCompletions = userService.findChallengesByCompletion(email, completion, PageRequest.of(page, size));
         return ResponseEntity.ok(allUserCompletions);
+    }
+
+    @Operation(summary = "개인 랭킹 조회 기능", description = "개인 랭킹 조회 기능")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = ChallengeResponseDto.class))),
+            @ApiResponse(responseCode = "500", description = "에러", content = @Content(schema = @Schema(implementation = ChallengeResponseDto.class)))})
+    @GetMapping("/ranking")
+    public ResponseEntity<RankingReponseDto> getIndividualRanking(@AuthenticationPrincipal String email) {
+        RankingReponseDto rankingDto = userService.getIndividualRanking(email);
+        return ResponseEntity.ok(rankingDto);
     }
 
 

@@ -8,4 +8,5 @@ public interface RankingService {
     void updateAllRanks();
 
     List<RankingReponseDto> getRankingOrderedByScore();
+
 }
