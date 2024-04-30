@@ -30,7 +30,7 @@ public class MeetingController {
     }
 
     @PostMapping
-    public MeetingResponseDto createMeeting(@AuthenticationPrincipal String email, @RequestBody @Valid MeetingDto meetingDto){
+    public MeetingResponseDto createMeeting(@AuthenticationPrincipal String email, @ModelAttribute @Valid MeetingDto meetingDto){
         meetingDto.setUserEmail(email);
         return meetingService.createMeeting(meetingDto);
     }

@@ -20,7 +20,13 @@ public enum ExceptionCode {
     ALREADY_USERMOUNTAIN_ON_DATE(HttpStatus.CONFLICT, "이미 같은 날에 이 산에 대한 인증이 존재합니다."),
     INVALID_JWT_TOKEN(HttpStatus.valueOf(403), "알수없는 형식에 JWT token 입니다."),
     EXPIRED_JWT_TOKEN(HttpStatus.valueOf(401), "JWT 토큰의 유효기간이 만료되었습니다"),
-    UNSUPPORTED_JWT_TOKEN(HttpStatus.valueOf(403), "JWT 가 서버에서 지원하지않는 유형입니다.");
+    UNSUPPORTED_JWT_TOKEN(HttpStatus.valueOf(403), "JWT 가 서버에서 지원하지않는 유형입니다."),
+    EMPTY_FILE(HttpStatus.NOT_FOUND, "이미지 파일이 존재하지 않습니다."),
+    IO_EXCEPTION_ON_IMAGE_UPLOAD(HttpStatus.CONFLICT, "이미지 업로드에 문제가 발생했습니다."),
+    NO_FILE_EXTENTION(HttpStatus.NOT_FOUND, "파일 확장자가 존재하지 않습니다." ),
+    INVALID_FILE_EXTENTION(HttpStatus.CONFLICT, "업로드 할 수 없는 확장자입니다." ),
+    PUT_OBJECT_EXCEPTION(HttpStatus.CONFLICT, "S3에 이미지를 업로드 할 수 없습니다." ),
+    IO_EXCEPTION_ON_IMAGE_DELETE(HttpStatus.CONFLICT, "이미지를 삭제 할 수 없습니다." );
 
     private final HttpStatus status;
     private final String message;

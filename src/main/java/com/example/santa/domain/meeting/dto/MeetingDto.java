@@ -6,6 +6,7 @@ import com.example.santa.domain.meeting.entity.Tag;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -32,6 +33,7 @@ public class MeetingDto {
     private LocalDate date;
     private List<String> tags;
     private String image;
+    private MultipartFile imageFile;
     // 참가자 정보는 모임 상세 조회 시에만 사용
     private List<ParticipantDto> participants;
 

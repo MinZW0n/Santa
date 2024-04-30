@@ -18,6 +18,7 @@ import com.example.santa.domain.user.entity.User;
 import com.example.santa.domain.user.repository.UserRepository;
 import com.example.santa.global.exception.ExceptionCode;
 import com.example.santa.global.exception.ServiceLogicException;
+import com.example.santa.global.util.S3ImageService;
 import com.example.santa.global.util.mapsturct.ParticipantsDtoMapper;
 import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
@@ -25,6 +26,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -39,8 +41,9 @@ public class MeetingService {
     private final MeetingTagRepository meetingTagRepository;
     private final ParticipantRepository participantRepository;
     private final ParticipantsDtoMapper participantsDtoMapper;
+    private final S3ImageService s3ImageService;
 
-    public MeetingService(MeetingRepository meetingRepository, UserRepository userRepository, CategoryRepository categoryRepository, TagRepository tagRepository, MeetingTagRepository meetingTagRepository, ParticipantRepository participantRepository, ParticipantsDtoMapper participantsDtoMapper) {
+    public MeetingService(MeetingRepository meetingRepository, UserRepository userRepository, CategoryRepository categoryRepository, TagRepository tagRepository, MeetingTagRepository meetingTagRepository, ParticipantRepository participantRepository, ParticipantsDtoMapper participantsDtoMapper, S3ImageService s3ImageService) {
         this.meetingRepository = meetingRepository;
         this.userRepository = userRepository;
         this.categoryRepository = categoryRepository;
@@ -48,6 +51,7 @@ public class MeetingService {
         this.meetingTagRepository = meetingTagRepository;
         this.participantRepository = participantRepository;
         this.participantsDtoMapper = participantsDtoMapper;
+        this.s3ImageService = s3ImageService;
     }
 
     public MeetingResponseDto createMeeting(MeetingDto meetingDto){
@@ -67,6 +71,13 @@ public class MeetingService {
             throw new ServiceLogicException(ExceptionCode.ALREADY_PARTICIPATING_ON_DATE);
         }
 
+        MultipartFile imageFile = meetingDto.getImageFile();
+        String imageUrl = "defaultUrl";
+        if (!imageFile.isEmpty()) {
+            imageUrl = s3ImageService.upload(imageFile);
+        }
+
+
         Meeting meeting = Meeting.builder()
                 .meetingName(meetingDto.getMeetingName())
                 .leader(leader)
@@ -75,7 +86,7 @@ public class MeetingService {
                 .description(meetingDto.getDescription())
                 .headcount(meetingDto.getHeadcount())
                 .date(meetingDto.getDate())
-                .image(meetingDto.getImage())
+                .image(imageUrl)
                 .build();
 
         meetingRepository.save(meeting);
