@@ -195,7 +195,7 @@ public class UserServiceImpl implements UserService {
         for (Ranking ranking : rankings) {
             if (ranking.getUser().getEmail().equals(email)) {
                 // 해당 사용자의 랭킹 정보를 반환합니다.
-                return new RankingResponseDto(rank,ranking.getUser().getNickname(), ranking.getUser().getImage(), ranking.getScore());
+                return new RankingResponseDto(rank,ranking.getId(),ranking.getUser().getNickname(), ranking.getUser().getImage(), ranking.getScore());
             }
             rank++;
         }

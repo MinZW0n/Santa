@@ -52,6 +52,7 @@ public class RankingServiceImpl implements RankingService{
         Page<Ranking> rankingsPage = rankingRepository.findAllByOrderByScoreDesc(pageable);
 
         return rankingsPage.map(ranking -> new RankingResponseDto(
+                ranking.getId(),
                 (long) (rankingRepository.countByScoreGreaterThan(ranking.getScore()) + 1),
                 ranking.getUser().getNickname(),
                 ranking.getUser().getImage(),
@@ -64,7 +65,7 @@ public class RankingServiceImpl implements RankingService{
         Optional<Ranking> ranking = rankingRepository.findByUserEmail(email);
         //Required type: Long
         //Provided: int
-        return ranking.map(r -> new RankingResponseDto((long) (rankingRepository.countByScoreGreaterThan(r.getScore()) + 1), r.getUser().getNickname(), r.getUser().getImage(), r.getScore()));
+        return ranking.map(r -> new RankingResponseDto((long) (rankingRepository.countByScoreGreaterThan(r.getScore()) + 1), r.getId(), r.getUser().getNickname(), r.getUser().getImage(), r.getScore()));
 
     }
 
