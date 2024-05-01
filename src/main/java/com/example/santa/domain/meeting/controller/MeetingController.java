@@ -64,8 +64,9 @@ public class MeetingController {
 //    }
 
     @PatchMapping("/{meetingId}")
-    public ResponseEntity<MeetingResponseDto> updateMeeting(@PathVariable(name = "meetingId") Long id, @RequestBody @Valid MeetingDto meetingDto) {
-        return ResponseEntity.ok(meetingService.updateMeeting(id, meetingDto));
+    public ResponseEntity<MeetingResponseDto> updateMeeting(@AuthenticationPrincipal String email,
+            @PathVariable(name = "meetingId") Long id, @ModelAttribute @Valid MeetingDto meetingDto) {
+        return ResponseEntity.ok(meetingService.updateMeeting(email, id, meetingDto));
     }
 
     @DeleteMapping("/{meetingId}")

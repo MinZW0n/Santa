@@ -182,11 +182,24 @@ public class MeetingService {
     }
 
     @Transactional
-    public MeetingResponseDto updateMeeting(Long id, MeetingDto meetingDto) {
+    public MeetingResponseDto updateMeeting(String email, Long id, MeetingDto meetingDto) {
         Meeting meeting = meetingRepository.findById(id)
                 .orElseThrow(() -> new ServiceLogicException(ExceptionCode.MEETING_NOT_FOUND));
         Category category = categoryRepository.findByName(meetingDto.getCategoryName())
                 .orElseThrow(() -> new ServiceLogicException(ExceptionCode.CATEGORY_NOT_FOUND));
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new ServiceLogicException(ExceptionCode.USER_NOT_FOUND));
+
+        if (!Objects.equals(user.getId(), meeting.getLeader().getId())){
+            throw new ServiceLogicException(ExceptionCode.USER_NOT_LEADER);
+        }
+
+        MultipartFile imageFile = meetingDto.getImageFile();
+        String imageUrl = meetingDto.getImage();
+        if (imageFile != null && !imageFile.isEmpty()) {
+            //s3ImageService.deleteImageFromS3(imageUrl);
+            imageUrl = s3ImageService.upload(imageFile);
+        }
 
         meeting.setMeetingName(meetingDto.getMeetingName());
         meeting.setCategory(category);
@@ -194,7 +207,7 @@ public class MeetingService {
         meeting.setDescription(meetingDto.getDescription());
         meeting.setHeadcount(meetingDto.getHeadcount());
         meeting.setDate(meetingDto.getDate());
-        meeting.setImage(meeting.getImage());
+        meeting.setImage(imageUrl);
 
         meetingRepository.save(meeting);
 

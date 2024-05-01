@@ -29,7 +29,8 @@ public enum ExceptionCode {
     NO_FILE_EXTENTION(HttpStatus.NOT_FOUND, "파일 확장자가 존재하지 않습니다." ),
     INVALID_FILE_EXTENTION(HttpStatus.CONFLICT, "업로드 할 수 없는 확장자입니다." ),
     PUT_OBJECT_EXCEPTION(HttpStatus.CONFLICT, "S3에 이미지를 업로드 할 수 없습니다." ),
-    IO_EXCEPTION_ON_IMAGE_DELETE(HttpStatus.CONFLICT, "이미지를 삭제 할 수 없습니다." );
+    IO_EXCEPTION_ON_IMAGE_DELETE(HttpStatus.CONFLICT, "이미지를 삭제 할 수 없습니다." ),
+    REPORT_ALREADY_EXISTS(HttpStatus.CONFLICT, "이미 신고한 사람입니다." );
 
     private final HttpStatus status;
     private final String message;
