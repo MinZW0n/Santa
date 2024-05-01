@@ -37,17 +37,25 @@ public class User extends BaseEntity implements UserDetails {
     @Enumerated(EnumType.STRING)
     private Role role;
 
+    @Enumerated(EnumType.STRING)
+    private SocialType socialType;
+
+    private String socialId;
     //누적 높이 저장
     private double accumulatedHeight;
 
     @Builder
-    public User(String email, Password password, String name, String nickname, String phoneNumber, Role role) {
+    public User(String email, Password password, String name, String nickname, String phoneNumber, String image, Role role, SocialType socialType, String socialId, double accumulatedHeight) {
         this.email = email;
         this.password = password;
         this.name = name;
         this.nickname = nickname;
         this.phoneNumber = phoneNumber;
+        this.image = image;
         this.role = role;
+        this.socialType = socialType;
+        this.socialId = socialId;
+        this.accumulatedHeight = accumulatedHeight;
     }
 
     public User update(String nickname, String phoneNumber, String image) {

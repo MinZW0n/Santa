@@ -2,6 +2,7 @@ package com.example.santa.domain.user.repository;
 
 import com.example.santa.domain.meeting.entity.Meeting;
 import com.example.santa.domain.user.dto.UserResponseDto;
+import com.example.santa.domain.user.entity.SocialType;
 import com.example.santa.domain.user.entity.User;
 import com.example.santa.domain.userchallenge.entity.UserChallenge;
 import com.example.santa.domain.usermountain.entity.UserMountain;
@@ -35,6 +36,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
     Page<UserChallenge> findByUserIdAndIsCompletedNull(Long userid,Pageable pageable);
 
 
-
+    Optional<User> findBySocialTypeAndSocialId(SocialType socialType, String socialId);
 
 }

@@ -54,6 +54,11 @@ dependencies {
 
     implementation 'org.springframework.boot:spring-boot-starter-validation'
 
+    //OAuth2
+    implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
+
+    //thymeleaf
+    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
 
     //Swagger UI
     implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.3.0'

@@ -12,6 +12,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.annotation.web.configurers.RequestCacheConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
@@ -22,6 +23,7 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 @EnableWebSecurity
 public class SecurityConfig {
     private final JwtTokenProvider jwtTokenProvider;
+    private final DefaultOAuth2UserService oAuth2UserService;
     public final String[] allowedUrls = {
             "/v2/api-docs",
             "/swagger-resources",
@@ -42,10 +44,14 @@ public class SecurityConfig {
                 .authorizeHttpRequests(
                         request -> request
                                 .requestMatchers(allowedUrls).permitAll()
+//                                .requestMatchers("/api/users/oauth2/**")
 //                                .requestMatchers("/api/users/signup").permitAll()
 //                                .requestMatchers("/api/users/sign-in").permitAll()
 //                                .anyRequest().authenticated())
                                 .anyRequest().permitAll())
+                .oauth2Login(oauth2 -> oauth2
+                        .redirectionEndpoint(endpoint -> endpoint.baseUri("/oauth2/callback/*"))
+                        .userInfoEndpoint(endpoint -> endpoint.userService(oAuth2UserService)))
                 // REST api -> basic, csrf 사용 x
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .csrf(AbstractHttpConfigurer::disable)

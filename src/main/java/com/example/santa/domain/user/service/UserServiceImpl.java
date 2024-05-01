@@ -78,6 +78,7 @@ public class UserServiceImpl implements UserService {
                 .name(request.getName())
                 .nickname(request.getNickname())
                 .phoneNumber(request.getPhoneNumber())
+                .image("/images/defaultProfile.png")
                 .role(Role.USER)
                 .build();
 
