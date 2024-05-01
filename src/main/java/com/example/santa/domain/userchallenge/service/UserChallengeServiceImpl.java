@@ -50,6 +50,7 @@ public class UserChallengeServiceImpl implements UserChallengeService{
     }
 
 
+    @Transactional
     @Override
     public void updateProgress(String email, Long userMountainId) {
         User user = userRepository.findByEmail(email)
@@ -90,6 +91,7 @@ public class UserChallengeServiceImpl implements UserChallengeService{
 
 
     @Transactional
+    @Override
     public void updateUserChallengeOnMeetingJoin(Long meetingId,Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ServiceLogicException(ExceptionCode.USER_NOT_FOUND));

@@ -35,7 +35,7 @@ public class Challenge extends BaseEntity {
     @Column
     private Integer clearStandard;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id")
     private Category category;
 

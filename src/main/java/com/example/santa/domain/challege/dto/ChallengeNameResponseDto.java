@@ -12,6 +12,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ChallengeNameResponseDto {
+    //Dto네이밍 변경하기
     private String name;
     private String description;
     private String image;

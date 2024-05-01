@@ -40,10 +40,3 @@ public class UserChallenge {
 
 }
 
-//    @ManyToOne
-//    @JoinColumn(name = "userMountain_id")
-//    private UserMountain userMountain;
-
-//    @ManyToOne
-//    @JoinColumn(name = "category_id")
-//    private Category category;

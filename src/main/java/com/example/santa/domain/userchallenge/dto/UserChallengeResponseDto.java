@@ -1,6 +1,5 @@
 package com.example.santa.domain.userchallenge.dto;
 
-import com.example.santa.domain.challege.dto.ChallengeRequestDto;
 import com.example.santa.domain.challege.dto.ChallengeResponseDto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

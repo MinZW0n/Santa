@@ -6,8 +6,6 @@ import com.example.santa.domain.user.entity.User;
 public interface UserChallengeService {
     void updateProgress(String email, Long userMountainId);
 
-//    void updateUserChallengeProgress(User user, Category category);
-//
-//    void updateProgressAndCheckCompletion(String email, Long challengeId);
+    void updateUserChallengeOnMeetingJoin(Long meetingId,Long userId);
 
-}
+    }
