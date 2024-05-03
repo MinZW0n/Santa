@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.validator.constraints.Range;
+import org.springframework.web.multipart.MultipartFile;
 
 @Getter
 @Setter
@@ -17,11 +18,11 @@ public class ChallengeCreateDto {
     private Long categoryId;
 
     @NotNull(message = "업적 명은 필수 입력란 입니다.")
-//    @Max(value = 20, message = "20자 이내로 작성해 주세요")
+    @Size(max = 20, message = "20자 이내로 작성해 주세요")
     private String name;
 
     @NotBlank(message = "업적 설명은 필수 입력란 입니다.")
-//    @Max(value = 1000, message = "10000자 이내로 작성해 주세요")
+    @Size(max = 1000, message = "10000자 이내로 작성해 주세요")
     private String description;
 
     @NotNull(message = "완료 기준은 필수 입력란 입니다.")
@@ -29,4 +30,6 @@ public class ChallengeCreateDto {
     private Integer clearStandard;
 
     private String image;
+
+    private MultipartFile imageFile;
 }

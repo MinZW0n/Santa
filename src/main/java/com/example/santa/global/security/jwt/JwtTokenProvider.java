@@ -1,25 +1,24 @@
 package com.example.santa.global.security.jwt;
 
+import com.example.santa.domain.user.entity.User;
+import com.example.santa.global.exception.ExceptionCode;
+import com.example.santa.global.exception.ServiceLogicException;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SecurityException;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import java.security.Key;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
-import java.util.List;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -46,20 +45,36 @@ public class JwtTokenProvider {
         // 권한 가져오기
         String authorities = authentication.getAuthorities()
                 .stream().map(GrantedAuthority::getAuthority).collect(Collectors.joining(","));
+        String username = authentication.getName();
         log.info("authorities {}", authorities);
+        return getJwtToken(username, authorities);
+    }
+    public JwtToken generateToken(User user) {
+        String username = user.getEmail();
+        String authorities = user.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.joining(","));
+        return getJwtToken(username, authorities);
+
+    }
+
+
+    private JwtToken getJwtToken(String username, String authorities) {
         long now = (new Date()).getTime();
 
-        // AccessToken 생성
-        Date accessTokenExpiresIn = new Date(now + 86400000);
+        // AccessToken 생성 //86400000
+        Date accessTokenExpiresIn = new Date(now + 1800000);
         String accessToken = Jwts.builder()
-                .setSubject(authentication.getName())
+                .setSubject(username)
                 .claim("auth", authorities)
+                .claim("type", "access")
                 .setExpiration(accessTokenExpiresIn)
                 .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
 
         // RefreshToken 생성
         String refreshToken = Jwts.builder()
+                .setSubject(username)
+                .claim("auth", authorities)
+                .claim("type", "refresh")
                 .setExpiration(new Date(now + 86400000))
                 .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
@@ -70,6 +85,28 @@ public class JwtTokenProvider {
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
                 .build();
+    }
+
+    public String generateAccessTokenFromRefreshToken(String refreshToken) {
+        if (validateToken(refreshToken)) {
+            throw new IllegalArgumentException("refreshToken 으로만 접근할 수 있습니다.");
+        }
+        // RefreshToken 으로부터 권한 정보 추출
+        // 토큰 복호화
+        Claims claims = parseClaims(refreshToken);
+        String username = claims.getSubject();
+        String authorities = claims.get("auth").toString();
+
+        long now = (new Date()).getTime();
+
+        Date accessTokenExpiresIn = new Date(now + 1800000);
+        String newAccessToken = Jwts.builder()
+                .setSubject(username)
+                .claim("auth", authorities)
+                .setExpiration(accessTokenExpiresIn)
+                .signWith(key, SignatureAlgorithm.HS256)
+                .compact();
+        return newAccessToken;
     }
 
     // Jwt 토큰을 복호화하여 토큰에 들어있는 정보를 꺼내는 메소드
@@ -98,15 +135,18 @@ public class JwtTokenProvider {
     // 토큰정보 검증 메소드
     public Boolean validateToken(String token) {
         try {
-            Jwts.parserBuilder()
+            Jws<Claims> claimsJws = Jwts.parserBuilder()
                     .setSigningKey(key)
                     .build()
                     .parseClaimsJws(token);
-            return true;
+            String type = claimsJws.getBody().get("type").toString();
+            return type.equals("access");
         } catch (SecurityException | MalformedJwtException e) {
             log.info("invalid JWT Token", e);
+//            throw new ServiceLogicException(ExceptionCode.INVALID_JWT_TOKEN);
         } catch (ExpiredJwtException e) {
             log.info("Expired JWT Token", e);
+//            throw new ServiceLogicException(ExceptionCode.EXPIRED_JWT_TOKEN);
         } catch (UnsupportedJwtException e) {
             log.info("Unsupported JWT Token", e);
         } catch (IllegalArgumentException e) {

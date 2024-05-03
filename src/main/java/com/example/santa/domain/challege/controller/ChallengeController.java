@@ -64,7 +64,7 @@ public class ChallengeController {
             @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation =ChallengeResponseDto.class))),
             @ApiResponse(responseCode = "500", description = "에러", content = @Content(schema = @Schema(implementation = ChallengeResponseDto.class)))})
     @PostMapping
-    public ResponseEntity<ChallengeResponseDto> createChallenge(@RequestBody @Valid ChallengeCreateDto challengeCreateDto) {
+    public ResponseEntity<ChallengeResponseDto> createChallenge(@ModelAttribute @Valid ChallengeCreateDto challengeCreateDto) {
         ChallengeResponseDto savedChallenge = challengeService.saveChallenge(challengeCreateDto);
         return ResponseEntity.ok(savedChallenge);
     }

@@ -2,7 +2,9 @@ package com.example.santa.domain.user.repository;
 
 import com.example.santa.domain.meeting.entity.Meeting;
 import com.example.santa.domain.user.dto.UserResponseDto;
+import com.example.santa.domain.user.entity.SocialType;
 import com.example.santa.domain.user.entity.User;
+import com.example.santa.domain.userchallenge.entity.UserChallenge;
 import com.example.santa.domain.usermountain.entity.UserMountain;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -26,5 +28,14 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     @Query("SELECT um FROM UserMountain um WHERE um.user.id = :userId")
     Page<UserMountain> findUserMountainsByUserId(@Param("userId") Long userId, Pageable pageable);
+
+    @Query("SELECT uc FROM UserChallenges uc WHERE uc.user.id = :userid AND uc.isCompleted = true")
+    Page<UserChallenge> findByUserIdAndIsCompletedTrue(Long userid,Pageable pageable);
+
+    @Query("SELECT uc FROM UserChallenges uc WHERE uc.user.id = :userid AND uc.isCompleted IS NULL")
+    Page<UserChallenge> findByUserIdAndIsCompletedNull(Long userid,Pageable pageable);
+
+
+    Optional<User> findBySocialTypeAndSocialId(SocialType socialType, String socialId);
 
 }
