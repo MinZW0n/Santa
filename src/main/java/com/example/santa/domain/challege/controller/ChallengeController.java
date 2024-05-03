@@ -17,6 +17,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -64,6 +65,7 @@ public class ChallengeController {
             @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation =ChallengeResponseDto.class))),
             @ApiResponse(responseCode = "500", description = "에러", content = @Content(schema = @Schema(implementation = ChallengeResponseDto.class)))})
     @PostMapping
+    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<ChallengeResponseDto> createChallenge(@ModelAttribute @Valid ChallengeCreateDto challengeCreateDto) {
         ChallengeResponseDto savedChallenge = challengeService.saveChallenge(challengeCreateDto);
         return ResponseEntity.ok(savedChallenge);
@@ -74,6 +76,7 @@ public class ChallengeController {
             @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation =ChallengeResponseDto.class))),
             @ApiResponse(responseCode = "500", description = "에러", content = @Content(schema = @Schema(implementation = ChallengeResponseDto.class)))})
     @PatchMapping("/{id}")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<ChallengeResponseDto> updateChallenge(@PathVariable(name = "id") Long id, @RequestBody @Valid ChallengeCreateDto challengeCreateDto) {
         ChallengeResponseDto updatedChallenge = challengeService.updateChallenge(id, challengeCreateDto);
         return ResponseEntity.ok(updatedChallenge);
@@ -84,6 +87,7 @@ public class ChallengeController {
             @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = void.class))),
             @ApiResponse(responseCode = "500", description = "에러", content = @Content(schema = @Schema(implementation = void.class)))})
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<Void> deleteChallenge(@PathVariable(name = "id") Long id) {
         challengeService.deleteChallenge(id);
         return ResponseEntity.noContent().build(); // 204

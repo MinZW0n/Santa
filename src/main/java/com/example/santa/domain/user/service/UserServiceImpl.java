@@ -40,6 +40,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Objects;
 
 @Slf4j
 @Transactional
@@ -78,7 +79,7 @@ public class UserServiceImpl implements UserService {
                 .name(request.getName())
                 .nickname(request.getNickname())
                 .phoneNumber(request.getPhoneNumber())
-                .image("/images/defaultProfile.png")
+                .image("https://s3.ap-northeast-2.amazonaws.com/elice.santa/user_default_img.png")
                 .role(Role.USER)
                 .build();
 
@@ -139,8 +140,12 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserResponseDto updateUser(String email, UserUpdateRequestDto userUpdateRequestDto) {
         MultipartFile imageFile = userUpdateRequestDto.getImageFile();
-        String imageUrl = "defaultUrl";
+        String imageUrl = userUpdateRequestDto.getImage();
         if (imageFile != null && !imageFile.isEmpty()) {
+            if(!Objects.equals(imageUrl, "https://s3.ap-northeast-2.amazonaws.com/elice.santa/user_default_img.png")){
+                s3ImageService.deleteImageFromS3(imageUrl);
+            }
+
             imageUrl = s3ImageService.upload(imageFile);
         }
 

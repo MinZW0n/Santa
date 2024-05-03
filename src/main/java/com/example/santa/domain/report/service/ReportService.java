@@ -36,7 +36,7 @@ public class ReportService {
 
         // 중복 신고 확인
         if (reportRepository.existsByReporterAndReportedParticipant(reporter, reportedParticipant)) {
-            throw new ServiceLogicException(ExceptionCode.REPORT_ALREADY_EXISTS); // 중복 신고 예외 - 메시지와 예외 코드는 적절히 설정
+            throw new ServiceLogicException(ExceptionCode.REPORT_ALREADY_EXISTS);
         }
 
         Report report = Report.builder()
@@ -55,5 +55,8 @@ public class ReportService {
         return reportRepository.findAll(pageRequest).map(reportResponseDtoMapper::toDto);
     }
 
+    public void deleteReport(Long id) {
+        reportRepository.deleteById(id);
+    }
 
 }

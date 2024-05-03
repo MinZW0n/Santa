@@ -72,7 +72,7 @@ public class MeetingService {
         }
 
         MultipartFile imageFile = meetingDto.getImageFile();
-        String imageUrl = "defaultUrl";
+        String imageUrl = "https://s3.ap-northeast-2.amazonaws.com/elice.santa/meeting_default_img.png";
         if (imageFile != null && !imageFile.isEmpty()) {
             imageUrl = s3ImageService.upload(imageFile);
         }
@@ -197,7 +197,10 @@ public class MeetingService {
         MultipartFile imageFile = meetingDto.getImageFile();
         String imageUrl = meetingDto.getImage();
         if (imageFile != null && !imageFile.isEmpty()) {
-            //s3ImageService.deleteImageFromS3(imageUrl);
+            if(!Objects.equals(imageUrl, "https://s3.ap-northeast-2.amazonaws.com/elice.santa/meeting_default_img.png")){
+                s3ImageService.deleteImageFromS3(imageUrl);
+            }
+
             imageUrl = s3ImageService.upload(imageFile);
         }
 

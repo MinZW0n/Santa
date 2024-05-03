@@ -21,6 +21,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.Objects;
+
 @Service
 @Slf4j
 public class ChallengeServiceImpl implements ChallengeService{
@@ -57,7 +59,7 @@ public class ChallengeServiceImpl implements ChallengeService{
                 .orElseThrow(() -> new ServiceLogicException(ExceptionCode.CATEGORY_NOT_FOUND));
 
         MultipartFile imageFile = challengeCreateDto.getImageFile();
-        String imageUrl = "defaultUrl";
+        String imageUrl = "https://s3.ap-northeast-2.amazonaws.com/elice.santa/challenge_default_image.png";
         if (imageFile != null && !imageFile.isEmpty()) {
             imageUrl = s3ImageService.upload(imageFile);
         }
@@ -91,6 +93,15 @@ public class ChallengeServiceImpl implements ChallengeService{
 
     @Override
     public ChallengeResponseDto updateChallenge(Long id, ChallengeCreateDto challengeCreateDto) {
+        MultipartFile imageFile = challengeCreateDto.getImageFile();
+        String imageUrl = challengeCreateDto.getImage();
+        if (imageFile != null && !imageFile.isEmpty()) {
+            if(!Objects.equals(imageUrl, "https://s3.ap-northeast-2.amazonaws.com/elice.santa/challenge_default_image.png")){
+                s3ImageService.deleteImageFromS3(imageUrl);
+            }
+
+            imageUrl = s3ImageService.upload(imageFile);
+        }
         ChallengeResponseDto result = null;
         if (challengeRepository.existsById(id)) {
             Challenge challenge = challengeRepository.findById(id).get();

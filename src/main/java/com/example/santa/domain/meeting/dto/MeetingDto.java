@@ -25,11 +25,11 @@ public class MeetingDto {
     private String meetingName;
     private String categoryName;
     private String mountainName;
-    //@NotBlank(message = "상세 설명을 입력하세요.")
+    @NotBlank(message = "상세 설명을 입력하세요.")
     private String description;
-    //@NotNull(message = "인원 수를 입력하세요.")
+    @NotNull(message = "인원 수를 입력하세요.")
     private int headcount;
-    //@NotNull(message = "날짜를 입력하세요.")
+    @NotNull(message = "날짜를 입력하세요.")
     private LocalDate date;
     private List<String> tags;
     private String image;

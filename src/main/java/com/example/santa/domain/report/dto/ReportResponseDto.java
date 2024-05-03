@@ -12,6 +12,8 @@ import lombok.Setter;
 @NoArgsConstructor
 public class ReportResponseDto {
 
+    private Long id;
+
     private String reason;
 
     private String reportedParticipantName;
