@@ -44,8 +44,7 @@ public class UserController {
     @PostMapping("/signup")
     @Operation(summary = "회원가입", description = "회원가입")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description = "성공", content = @Content(schema = @Schema(implementation = Long.class))),
-            @ApiResponse(responseCode = "500", description = "에러", content = @Content(schema = @Schema(implementation = Long.class)))})
+            @ApiResponse(responseCode = "201", description = "성공", content = @Content(schema = @Schema(implementation = Long.class)))})
     public ResponseEntity<Long> signup(@RequestBody @Valid UserSignupRequestDto userSignupRequestDto) {
         Long signup = userService.signup(userSignupRequestDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(signup);
@@ -53,8 +52,7 @@ public class UserController {
     @PostMapping("/duplicate/email")
     @Operation(summary = "이메일 중복 확인", description = "이메일 중복 확인")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = Boolean.class))),
-            @ApiResponse(responseCode = "500", description = "에러", content = @Content(schema = @Schema(implementation = Boolean.class)))})
+            @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = Boolean.class)))})
     public ResponseEntity<Boolean> checkEmailDuplicate(@RequestBody @Valid CheckEmailRequestDto checkEmailRequestDto) {
         log.info("email {}", checkEmailRequestDto.getEmail());
         Boolean checked = userService.checkEmailDuplicate(checkEmailRequestDto.getEmail());
@@ -64,8 +62,7 @@ public class UserController {
     @PostMapping("/duplicate/nickname")
     @Operation(summary = "닉네임 중복 확인", description = "닉네임 중복 확인")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = Boolean.class))),
-            @ApiResponse(responseCode = "500", description = "에러", content = @Content(schema = @Schema(implementation = Boolean.class)))})
+            @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = Boolean.class)))})
     public ResponseEntity<Boolean> checkNicknameDuplicate(@RequestBody @Valid CheckNicknameRequestDto checkNicknameRequestDto) {
         Boolean checked = userService.checkNicknameDuplicate(checkNicknameRequestDto.getNickname());
         return ResponseEntity.status(HttpStatus.OK).body(checked);
@@ -74,8 +71,7 @@ public class UserController {
     @PostMapping("/send-email")
     @Operation(summary = "이메일 인증코드 보내기", description = "이메일 인증코드 보내기")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description = "성공", content = @Content(schema = @Schema(implementation = String.class))),
-            @ApiResponse(responseCode = "500", description = "에러", content = @Content(schema = @Schema(implementation = String.class)))})
+            @ApiResponse(responseCode = "201", description = "성공", content = @Content(schema = @Schema(implementation = String.class)))})
     public ResponseEntity<String> sendEmail(@RequestBody @Valid EmailRequestDto emailRequestDto) throws MessagingException, UnsupportedEncodingException {
         log.info("이메일 인증 이메일: {}", emailRequestDto.getEmail());
         String code = emailSendService.sendSimpleMessage(emailRequestDto.getEmail());
@@ -86,8 +82,7 @@ public class UserController {
     @PostMapping("/verify-email")
     @Operation(summary = "이메일 인증", description = "이메일 인증")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description = "성공", content = @Content(schema = @Schema(implementation = String.class))),
-            @ApiResponse(responseCode = "500", description = "에러", content = @Content(schema = @Schema(implementation = String.class)))})
+            @ApiResponse(responseCode = "201", description = "성공", content = @Content(schema = @Schema(implementation = String.class)))})
     public ResponseEntity<Boolean> verifyEmail(@RequestBody @Valid EmailCheckDto emailCheckDto) {
         Boolean verifyEmail = emailSendService.verifyEmail(emailCheckDto.getAuthNumber(), emailCheckDto.getEmail());
         return ResponseEntity.status(HttpStatus.OK).body(verifyEmail);
@@ -97,8 +92,7 @@ public class UserController {
     @PostMapping("/sign-in")
     @Operation(summary = "로그인", description = "로그인")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = JwtToken.class))),
-            @ApiResponse(responseCode = "500", description = "에러", content = @Content(schema = @Schema(implementation = JwtToken.class)))})
+            @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = JwtToken.class)))})
     public ResponseEntity<JwtToken> signIn(@RequestBody @Valid UserSignInRequestDto userSignInRequestDto) {
         JwtToken jwtToken = userService.signIn(userSignInRequestDto);
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(jwtToken);
@@ -107,8 +101,7 @@ public class UserController {
     @PostMapping("/new-access-token")
     @Operation(summary = "AccessToken 재발급", description = "AccessToken 재발급")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description = "성공", content = @Content(schema = @Schema(implementation = Long.class))),
-            @ApiResponse(responseCode = "500", description = "에러", content = @Content(schema = @Schema(implementation = Long.class)))})
+            @ApiResponse(responseCode = "201", description = "성공", content = @Content(schema = @Schema(implementation = Long.class)))})
     public ResponseEntity<String> generateAccessToken(@RequestBody String refreshToken) {
         String token = userService.generateAccessToken(refreshToken);
         return ResponseEntity.status(HttpStatus.CREATED).body(token);
@@ -122,30 +115,43 @@ public class UserController {
     @GetMapping("/my-info")
     @Operation(summary = "마이페이지", description = "마이페이지")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = UserResponseDto.class))),
-            @ApiResponse(responseCode = "500", description = "에러", content = @Content(schema = @Schema(implementation = UserResponseDto.class)))})
+            @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = UserResponseDto.class)))})
     public ResponseEntity<UserResponseDto> findUser(@AuthenticationPrincipal String email) {
         UserResponseDto userByEmail = userService.findUserByEmail(email);
         return ResponseEntity.status(HttpStatus.OK).body(userByEmail);
     }
 
+//    @GetMapping("")
+//    @Operation(summary = "관리자 회원 조회", description = "관리자 회원조회")
+//    @PreAuthorize("hasAuthority('ADMIN')")
+//    @ApiResponses(value = {
+//            @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = UserResponseDto.class))),
+//            @ApiResponse(responseCode = "500", description = "에러", content = @Content(schema = @Schema(implementation = UserResponseDto.class)))})
+//    public ResponseEntity<Page<UserResponseDto>> findAllUser(
+//            @RequestParam(required = false) String search
+//            , @RequestParam(name = "size", defaultValue = "5") Integer size
+//            , @RequestParam(name = "page", defaultValue = "0") Integer page) {
+//        Page<UserResponseDto> allUser = userService.findAllUser(search, PageRequest.of(page, size));
+//        return ResponseEntity.status(HttpStatus.OK).body(allUser);
+//    }
+
     @GetMapping("")
-    @Operation(summary = "*관리자* 회원조회", description = "회원조회")
+    @Operation(summary = "관리자 회원 조회(신고포함)", description = "관리자 회원조회(신고포함)")
     @PreAuthorize("hasAuthority('ADMIN')")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = UserResponseDto.class))),
-            @ApiResponse(responseCode = "500", description = "에러", content = @Content(schema = @Schema(implementation = UserResponseDto.class)))})
-    public ResponseEntity<Page<UserResponseDto>> findAllUser(@RequestParam(name = "size", defaultValue = "5") Integer size
+            @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = UserReportResponseDto.class)))})
+    public ResponseEntity<Page<UserReportResponseDto>> findAllReportUser(
+            @RequestParam(required = false) String search
+            , @RequestParam(name = "size", defaultValue = "5") Integer size
             , @RequestParam(name = "page", defaultValue = "0") Integer page) {
-        Page<UserResponseDto> allUser = userService.findAllUser(PageRequest.of(page, size));
-        return ResponseEntity.status(HttpStatus.OK).body(allUser);
+        Page<UserReportResponseDto> allReportUser = userService.findAllReportUser(search, PageRequest.of(page, size));
+        return ResponseEntity.status(HttpStatus.OK).body(allReportUser);
     }
 
     @PatchMapping("/my-info")
     @Operation(summary = "마이페이지 수정", description = "마이페이지 수정")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = UserResponseDto.class))),
-            @ApiResponse(responseCode = "500", description = "에러", content = @Content(schema = @Schema(implementation = UserResponseDto.class)))})
+            @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = UserResponseDto.class)))})
     public ResponseEntity<UserResponseDto> updateUser(@AuthenticationPrincipal String email, @ModelAttribute @Valid UserUpdateRequestDto userUpdateRequestDto) {
         UserResponseDto updateUser = userService.updateUser(email, userUpdateRequestDto);
         return ResponseEntity.status(HttpStatus.OK).body(updateUser);
@@ -154,8 +160,7 @@ public class UserController {
     @PatchMapping("/passwords")
     @Operation(summary = "비밀번호 수정", description = "비밀번호 수정")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description = "성공", content = @Content(schema = @Schema(implementation = String.class))),
-            @ApiResponse(responseCode = "500", description = "에러", content = @Content(schema = @Schema(implementation = String.class)))})
+            @ApiResponse(responseCode = "201", description = "성공", content = @Content(schema = @Schema(implementation = String.class)))})
     public ResponseEntity<String> changePassword(@AuthenticationPrincipal String email, @RequestBody @Valid PasswordChangeRequestDto passwordChangeRequestDto) {
         String changePassword = userService.changePassword(email
                 , passwordChangeRequestDto.getOldPassword(), passwordChangeRequestDto.getNewPassword());
@@ -166,8 +171,7 @@ public class UserController {
     @PostMapping("/reset-passwords")
     @Operation(summary = "비밀번호 찾기", description = "비밀번호 칮기")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description = "성공", content = @Content(schema = @Schema(implementation = String.class))),
-            @ApiResponse(responseCode = "500", description = "에러", content = @Content(schema = @Schema(implementation = String.class)))})
+            @ApiResponse(responseCode = "201", description = "성공", content = @Content(schema = @Schema(implementation = String.class)))})
     public ResponseEntity<String> resetPassword(@RequestBody @Valid PasswordResetRequestDto passwordResetRequestDto) {
         String resetPassword = userService.resetPassword(passwordResetRequestDto.getEmail(), passwordResetRequestDto.getNewPassword());
         return ResponseEntity.status(HttpStatus.OK).body(resetPassword);
@@ -177,8 +181,7 @@ public class UserController {
     @GetMapping("/mountains")
     @Operation(summary = "등반한 산 전체조회", description = "등반한 산 전체조회")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = UserResponseDto.class))),
-            @ApiResponse(responseCode = "500", description = "에러", content = @Content(schema = @Schema(implementation = UserResponseDto.class)))})
+            @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = UserMountainResponseDto.class)))})
     public ResponseEntity<Page<UserMountainResponseDto>> getAllUserMountains(@AuthenticationPrincipal String email
             , @RequestParam(name = "size", defaultValue = "5") Integer size
             , @RequestParam(name = "page", defaultValue = "0") Integer page) {
@@ -202,8 +205,7 @@ public class UserController {
     @PostMapping("/preferred-categories")
     @Operation(summary = "선호카테고리 생성", description = "선호카테고리 생성")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = List.class))),
-            @ApiResponse(responseCode = "500", description = "에러", content = @Content(schema = @Schema(implementation = List.class)))})
+            @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = List.class)))})
     public ResponseEntity<List<Long>> savePreferredCategory(@AuthenticationPrincipal String email, @RequestBody @Valid CategoriesRequestDto categoriesRequestDto) {
         // 지우고 생성
         userService.deleteAllPreferredCategory(email);
@@ -213,8 +215,7 @@ public class UserController {
     @GetMapping("/preferred-categories")
     @Operation(summary = "선호카테고리 전체조회", description = "선호카테고리 전체조회")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = List.class))),
-            @ApiResponse(responseCode = "500", description = "에러", content = @Content(schema = @Schema(implementation = List.class)))})
+            @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = List.class)))})
     public ResponseEntity<List<PreferredCategoryResponseDto>> findPreferredCategories(@AuthenticationPrincipal String email) {
         List<PreferredCategoryResponseDto> allPreferredCategories = userService.findAllPreferredCategories(email);
         return ResponseEntity.status(HttpStatus.OK).body(allPreferredCategories);
@@ -223,8 +224,7 @@ public class UserController {
     @GetMapping("/completion")
     @Operation(summary = "완료(true)/진행 중 업적(false) 조회", description = "완료(true)/진행 중 업적(false) 조회")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = UserResponseDto.class))),
-            @ApiResponse(responseCode = "500", description = "에러", content = @Content(schema = @Schema(implementation = UserResponseDto.class)))})
+            @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = UserChallengeCompletionResponseDto.class)))})
     public ResponseEntity<Page<UserChallengeCompletionResponseDto>> getAllUserCompletions(@AuthenticationPrincipal String email
             , @RequestParam(name = "completion") boolean completion
             , @RequestParam(name = "size", defaultValue = "5") Integer size
@@ -235,8 +235,7 @@ public class UserController {
 
     @Operation(summary = "개인 랭킹 조회 기능", description = "개인 랭킹 조회 기능")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = ChallengeResponseDto.class))),
-            @ApiResponse(responseCode = "500", description = "에러", content = @Content(schema = @Schema(implementation = ChallengeResponseDto.class)))})
+            @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = RankingResponseDto.class)))})
     @GetMapping("/ranking")
     public ResponseEntity<RankingResponseDto> getIndividualRanking(@AuthenticationPrincipal String email) {
         RankingResponseDto rankingDto = userService.getIndividualRanking(email);

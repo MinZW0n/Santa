@@ -26,6 +26,13 @@ public class OAuth2UserServiceImpl extends DefaultOAuth2UserService {
     @Override
     public OAuth2User loadUser(OAuth2UserRequest request) throws OAuth2AuthenticationException {
         OAuth2User oAuth2User = super.loadUser(request);
+
+        try {
+            System.out.println(new ObjectMapper().writeValueAsString(oAuth2User.getAttributes()));
+        } catch (Exception exception) {
+            exception.printStackTrace();
+        }
+
         // 어떤 소셜에서 정보를 제공해주었는지 알기 위해서
         String registrationId = request.getClientRegistration().getRegistrationId();
         // OAuth2User 가지고 있는 전체정보에서 사용자 정보가 담긴 Key 를 의미
@@ -55,4 +62,5 @@ public class OAuth2UserServiceImpl extends DefaultOAuth2UserService {
         return new OAuth2UserImpl(Collections.singleton(new SimpleGrantedAuthority(user.getRole().toString())),
                 attributes, oAuth2Attributes.getNameAttributeKey(), user);
     }
+
 }

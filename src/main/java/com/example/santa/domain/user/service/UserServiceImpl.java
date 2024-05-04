@@ -9,10 +9,7 @@ import com.example.santa.domain.preferredcategory.repository.PreferredCategoryRe
 import com.example.santa.domain.rank.dto.RankingResponseDto;
 import com.example.santa.domain.rank.entity.Ranking;
 import com.example.santa.domain.rank.repository.RankingRepository;
-import com.example.santa.domain.user.dto.UserResponseDto;
-import com.example.santa.domain.user.dto.UserSignInRequestDto;
-import com.example.santa.domain.user.dto.UserSignupRequestDto;
-import com.example.santa.domain.user.dto.UserUpdateRequestDto;
+import com.example.santa.domain.user.dto.*;
 import com.example.santa.domain.user.entity.Password;
 import com.example.santa.domain.user.entity.Role;
 import com.example.santa.domain.user.entity.User;
@@ -37,6 +34,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
@@ -131,8 +129,20 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Page<UserResponseDto> findAllUser(Pageable pageable) {
+    public Page<UserResponseDto> findAllUser(String search, Pageable pageable) {
+        if (StringUtils.hasText(search)) {
+            return userRepository.findAllByNameContainingOrNicknameContaining(search, search, pageable).map(userResponseDtoMapper::toDto);
+        }
         return userRepository.findAll(pageable).map(userResponseDtoMapper::toDto);
+    }
+
+    @Override
+    public Page<UserReportResponseDto> findAllReportUser(String search, Pageable pageable) {
+        if (StringUtils.hasText(search)) {
+            return userRepository.findUsersWithReportCount(search, pageable);
+        } else {
+            return userRepository.findUsersWithReportCount("", pageable);
+        }
     }
 
 

@@ -1,5 +1,6 @@
 package com.example.santa.global.config;
 
+import com.example.santa.domain.user.oauth.CustomOAuth2LoginSuccessHandler;
 import com.example.santa.global.security.jwt.JwtAuthenticationFilter;
 import com.example.santa.global.security.jwt.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +27,8 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 public class SecurityConfig {
     private final JwtTokenProvider jwtTokenProvider;
     private final DefaultOAuth2UserService oAuth2UserService;
+
+    private final CustomOAuth2LoginSuccessHandler customOAuth2LoginSuccessHandler;
     public final String[] allowedUrls = {
             "/v2/api-docs",
             "/swagger-resources",
@@ -46,14 +49,18 @@ public class SecurityConfig {
                 .authorizeHttpRequests(
                         request -> request
                                 .requestMatchers(allowedUrls).permitAll()
-//                                .requestMatchers("/api/users/oauth2/**")
+                                .requestMatchers("/login/oauth2/code/**").permitAll()
+                                .requestMatchers("/oauth2/**").permitAll()
 //                                .requestMatchers("/api/users/signup").permitAll()
 //                                .requestMatchers("/api/users/sign-in").permitAll()
 //                                .anyRequest().authenticated())
-                                .anyRequest().permitAll())
+                                .anyRequest().permitAll()
+                )
                 .oauth2Login(oauth2 -> oauth2
-                        .redirectionEndpoint(endpoint -> endpoint.baseUri("/oauth2/callback/*"))
-                        .userInfoEndpoint(endpoint -> endpoint.userService(oAuth2UserService)))
+                        .redirectionEndpoint(endpoint -> endpoint.baseUri("/login/oauth2/code/**"))
+                        .userInfoEndpoint(endpoint -> endpoint.userService(oAuth2UserService))
+                        .successHandler(customOAuth2LoginSuccessHandler)
+                )
                 // REST api -> basic, csrf 사용 x
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .csrf(AbstractHttpConfigurer::disable)
