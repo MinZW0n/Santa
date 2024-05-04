@@ -32,8 +32,7 @@ public class MountainController {
 
     @Operation(summary = "산 전체 조회 기능", description = "산 전체 조회 기능")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = MountainResponseDto.class))),
-            @ApiResponse(responseCode = "500", description = "에러", content = @Content(schema = @Schema(implementation = MountainResponseDto.class)))})
+            @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = MountainResponseDto.class)))})
     @GetMapping
     public ResponseEntity<Page<MountainResponseDto>> getAllMountains(@RequestParam(defaultValue = "0") int page,
                                                                      @RequestParam(defaultValue = "10") int size){
@@ -43,8 +42,7 @@ public class MountainController {
     }
     @Operation(summary = "산 개별 조회 기능", description = "산 개별 조회 기능")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = MountainResponseDto.class))),
-            @ApiResponse(responseCode = "500", description = "에러", content = @Content(schema = @Schema(implementation = MountainResponseDto.class)))})
+            @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = MountainResponseDto.class)))})
     @GetMapping("/{id}")
     public ResponseEntity<MountainResponseDto> getMountainById(@PathVariable(name = "id") Long id){
         MountainResponseDto mountain = mountainService.findMountainById(id);
@@ -54,8 +52,7 @@ public class MountainController {
 
     @Operation(summary = "등산 인증 기능(유저 마운틴 등록)", description = "등산 인증 기능(유저 마운틴 등록)")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = UserMountainResponseDto.class))),
-            @ApiResponse(responseCode = "500", description = "에러", content = @Content(schema = @Schema(implementation = UserMountainResponseDto.class)))})
+            @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = UserMountainResponseDto.class)))})
     @PostMapping("/verify")
     public ResponseEntity<UserMountainResponseDto> createUserMountain(@AuthenticationPrincipal String email, @RequestBody UserMountainVerifyRequestDto request) {
         UserMountainResponseDto userMountain = userMountainService.verifyAndCreateUserMountain(request, email);

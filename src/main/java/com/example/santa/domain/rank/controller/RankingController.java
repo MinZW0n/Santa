@@ -32,8 +32,7 @@ public class RankingController {
 
     @Operation(summary = "랭킹 조회 기능(+사용자의 랭킹도 따로 보이도록)", description = "랭킹 조회 기능(+사용자의 랭킹도 따로 보이도록)")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = ChallengeResponseDto.class))),
-            @ApiResponse(responseCode = "500", description = "에러", content = @Content(schema = @Schema(implementation = ChallengeResponseDto.class)))})
+            @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = RankingResponseDto.class)))})
     @GetMapping
     public ResponseEntity<Map<String, Object>> getAllRanksDtoWithUserRanking(
             @AuthenticationPrincipal String email,
