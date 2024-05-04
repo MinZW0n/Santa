@@ -17,17 +17,17 @@ import java.util.Arrays;
 import java.util.List;
 
 @SpringBootTest
-class CategoryServiceTest {
+class CategoryServiceImplTest {
 
     @Mock
     private CategoryRepository categoryRepository;
 
     @InjectMocks
-    private CategoryService categoryService;
+    private CategoryServiceImpl categoryServiceImpl;
 
     @BeforeEach
     void setUp() {
-        categoryService = new CategoryService(categoryRepository);
+        categoryServiceImpl = new CategoryServiceImpl(categoryRepository);
     }
 
     @Test
@@ -38,7 +38,7 @@ class CategoryServiceTest {
         given(categoryRepository.save(any(Category.class))).willAnswer(invocation -> invocation.getArgument(0));
 
         // when
-        Category createdCategory = categoryService.createCategory(categoryName);
+        Category createdCategory = categoryServiceImpl.createCategory(categoryName);
 
         // then
         assertNotNull(createdCategory);
@@ -52,7 +52,7 @@ class CategoryServiceTest {
         given(categoryRepository.findByName(categoryName)).willReturn(Optional.of(new Category()));
 
         // when & then
-        assertThrows(ServiceLogicException.class, () -> categoryService.createCategory(categoryName));
+        assertThrows(ServiceLogicException.class, () -> categoryServiceImpl.createCategory(categoryName));
     }
 
     @Test
@@ -61,7 +61,7 @@ class CategoryServiceTest {
         given(categoryRepository.findAll()).willReturn(Arrays.asList(new Category(), new Category()));
 
         // when
-        List<Category> categories = categoryService.getAllCategories();
+        List<Category> categories = categoryServiceImpl.getAllCategories();
 
         // then
         assertNotNull(categories);
@@ -81,7 +81,7 @@ class CategoryServiceTest {
         given(categoryRepository.save(any(Category.class))).willAnswer(invocation -> invocation.getArgument(0));
 
         // when
-        Category updatedCategory = categoryService.updateCategory(categoryId, newCategoryName);
+        Category updatedCategory = categoryServiceImpl.updateCategory(categoryId, newCategoryName);
 
         // then
         assertNotNull(updatedCategory);
@@ -95,7 +95,7 @@ class CategoryServiceTest {
         willDoNothing().given(categoryRepository).deleteById(categoryId);
 
         // when
-        categoryService.deleteCategory(categoryId);
+        categoryServiceImpl.deleteCategory(categoryId);
 
         // then
         verify(categoryRepository, times(1)).deleteById(categoryId);
