@@ -21,7 +21,7 @@ public class MeetingDto {
     private Long meetingId;
     private Long leaderId;
     private String userEmail;
-    @NotBlank(message = "모임 이름을 입력하세요.")
+    //@NotBlank(message = "모임 이름을 입력하세요.")
     private String meetingName;
     private String categoryName;
     private String mountainName;

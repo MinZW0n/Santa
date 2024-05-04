@@ -17,21 +17,19 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/challenges")
+@RequiredArgsConstructor
 public class ChallengeController {
 
 
     private final ChallengeService challengeService;
 
-    @Autowired
-    public ChallengeController(ChallengeService challengeService) {
-        this.challengeService = challengeService;
-    }
 
     @Operation(summary = "챌린지 조회 기능", description = "전체 챌린지 조회")
     @ApiResponses(value = {
@@ -40,10 +38,10 @@ public class ChallengeController {
     @GetMapping
     public ResponseEntity<Page<ChallengeResponseDto>> getAllChallenges(@RequestParam(defaultValue = "0") int page,
                                                                        @RequestParam(defaultValue = "10") int size){
-//        PageRequest pageRequest = PageRequest.of(page, size , Sort.by("createdDate").descending());
-//        Page<ChallengeResponseDto> challenges =challengeService.findAllChallenges(pageRequest);
+
         Page<ChallengeResponseDto> challenges = challengeService.findAllChallenges(PageRequest.of(page, size, Sort.by("createdDate").descending()));
-        return new ResponseEntity<>(challenges, HttpStatus.OK);
+        return ResponseEntity.ok(challenges);
+
     }
 
     //챌린지 ID로 조회
@@ -59,31 +57,34 @@ public class ChallengeController {
 
 
     // 챌린지 등록
-    @Operation(summary = "챌린지 등록기능", description = "챌린지 등록")
+    @Operation(summary = "*관리자* 챌린지 등록기능", description = "챌린지 등록")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation =ChallengeResponseDto.class))),
             @ApiResponse(responseCode = "500", description = "에러", content = @Content(schema = @Schema(implementation = ChallengeResponseDto.class)))})
     @PostMapping
+    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<ChallengeResponseDto> createChallenge(@ModelAttribute @Valid ChallengeCreateDto challengeCreateDto) {
         ChallengeResponseDto savedChallenge = challengeService.saveChallenge(challengeCreateDto);
         return ResponseEntity.ok(savedChallenge);
     }
 
-    @Operation(summary = "등록 챌린지 수정 기능", description = "등록된 챌린지 정보 수정")
+    @Operation(summary = "*관리자* 등록 챌린지 수정 기능", description = "등록된 챌린지 정보 수정")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation =ChallengeResponseDto.class))),
             @ApiResponse(responseCode = "500", description = "에러", content = @Content(schema = @Schema(implementation = ChallengeResponseDto.class)))})
     @PatchMapping("/{id}")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<ChallengeResponseDto> updateChallenge(@PathVariable(name = "id") Long id, @RequestBody @Valid ChallengeCreateDto challengeCreateDto) {
         ChallengeResponseDto updatedChallenge = challengeService.updateChallenge(id, challengeCreateDto);
         return ResponseEntity.ok(updatedChallenge);
     }
 
-    @Operation(summary = "등록 챌린지 삭제 기능", description = "등록된 챌린지를 챌린지 고유 id로 삭제")
+    @Operation(summary = "*관리자* 등록 챌린지 삭제 기능", description = "등록된 챌린지를 챌린지 고유 id로 삭제")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = void.class))),
             @ApiResponse(responseCode = "500", description = "에러", content = @Content(schema = @Schema(implementation = void.class)))})
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<Void> deleteChallenge(@PathVariable(name = "id") Long id) {
         challengeService.deleteChallenge(id);
         return ResponseEntity.noContent().build(); // 204

@@ -9,10 +9,7 @@ import com.example.santa.domain.preferredcategory.repository.PreferredCategoryRe
 import com.example.santa.domain.rank.dto.RankingResponseDto;
 import com.example.santa.domain.rank.entity.Ranking;
 import com.example.santa.domain.rank.repository.RankingRepository;
-import com.example.santa.domain.user.dto.UserResponseDto;
-import com.example.santa.domain.user.dto.UserSignInRequestDto;
-import com.example.santa.domain.user.dto.UserSignupRequestDto;
-import com.example.santa.domain.user.dto.UserUpdateRequestDto;
+import com.example.santa.domain.user.dto.*;
 import com.example.santa.domain.user.entity.Password;
 import com.example.santa.domain.user.entity.Role;
 import com.example.santa.domain.user.entity.User;
@@ -37,9 +34,11 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Objects;
 
 @Slf4j
 @Transactional
@@ -78,6 +77,7 @@ public class UserServiceImpl implements UserService {
                 .name(request.getName())
                 .nickname(request.getNickname())
                 .phoneNumber(request.getPhoneNumber())
+                .image("https://s3.ap-northeast-2.amazonaws.com/elice.santa/user_default_img.png")
                 .role(Role.USER)
                 .build();
 
@@ -129,8 +129,20 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Page<UserResponseDto> findAllUser(Pageable pageable) {
+    public Page<UserResponseDto> findAllUser(String search, Pageable pageable) {
+        if (StringUtils.hasText(search)) {
+            return userRepository.findAllByNameContainingOrNicknameContaining(search, search, pageable).map(userResponseDtoMapper::toDto);
+        }
         return userRepository.findAll(pageable).map(userResponseDtoMapper::toDto);
+    }
+
+    @Override
+    public Page<UserReportResponseDto> findAllReportUser(String search, Pageable pageable) {
+        if (StringUtils.hasText(search)) {
+            return userRepository.findUsersWithReportCount(search, pageable);
+        } else {
+            return userRepository.findUsersWithReportCount("", pageable);
+        }
     }
 
 
@@ -138,8 +150,12 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserResponseDto updateUser(String email, UserUpdateRequestDto userUpdateRequestDto) {
         MultipartFile imageFile = userUpdateRequestDto.getImageFile();
-        String imageUrl = "defaultUrl";
+        String imageUrl = userUpdateRequestDto.getImage();
         if (imageFile != null && !imageFile.isEmpty()) {
+            if(!Objects.equals(imageUrl, "https://s3.ap-northeast-2.amazonaws.com/elice.santa/user_default_img.png")){
+                s3ImageService.deleteImageFromS3(imageUrl);
+            }
+
             imageUrl = s3ImageService.upload(imageFile);
         }
 

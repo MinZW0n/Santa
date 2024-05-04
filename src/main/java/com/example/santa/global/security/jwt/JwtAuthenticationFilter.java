@@ -2,6 +2,7 @@ package com.example.santa.global.security.jwt;
 
 import jakarta.servlet.*;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -28,9 +29,15 @@ public class JwtAuthenticationFilter extends GenericFilter {
         String token = resolveToken((HttpServletRequest) request);
 
         // 검증하고 유효하다면 SecurityContext 에 저장
-        if (token != null && jwtTokenProvider.validateToken(token)) {
-            Authentication authentication = jwtTokenProvider.getAuthentication(token);
-            SecurityContextHolder.getContext().setAuthentication(authentication);
+        if (token != null) {
+            if (jwtTokenProvider.validateToken(token)) {
+                Authentication authentication = jwtTokenProvider.getAuthentication(token);
+                SecurityContextHolder.getContext().setAuthentication(authentication);
+            }
+            else {
+                HttpServletResponse httpServletResponse = (HttpServletResponse) response;
+                httpServletResponse.sendError(403, "잘못된 토큰입니다");
+            }
         }
         filterChain.doFilter(request, response);
     }

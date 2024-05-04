@@ -29,22 +29,11 @@ public class RankingController {
 
     private final RankingService rankingService;
 
-    @Operation(summary = "랭킹 조회 기능", description = "랭킹 조회 기능")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = ChallengeResponseDto.class))),
-            @ApiResponse(responseCode = "500", description = "에러", content = @Content(schema = @Schema(implementation = ChallengeResponseDto.class)))})
-    @GetMapping
-    public ResponseEntity<Page<RankingResponseDto>> getAllRanksDto(@RequestParam(defaultValue = "0") int page,
-                                                                   @RequestParam(defaultValue = "10") int size) {
-        Page<RankingResponseDto> rankingPage = rankingService.getRankingOrderedByScore(PageRequest.of(page, size, Sort.by("score").descending()));
-        return ResponseEntity.ok(rankingPage);
-    }
 
     @Operation(summary = "랭킹 조회 기능(+사용자의 랭킹도 따로 보이도록)", description = "랭킹 조회 기능(+사용자의 랭킹도 따로 보이도록)")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = ChallengeResponseDto.class))),
-            @ApiResponse(responseCode = "500", description = "에러", content = @Content(schema = @Schema(implementation = ChallengeResponseDto.class)))})
-    @GetMapping("/rankings")
+            @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = RankingResponseDto.class)))})
+    @GetMapping
     public ResponseEntity<Map<String, Object>> getAllRanksDtoWithUserRanking(
             @AuthenticationPrincipal String email,
             @RequestParam(defaultValue = "0") int page,
@@ -60,3 +49,14 @@ public class RankingController {
         return ResponseEntity.ok(response);
     }
 }
+
+//    @Operation(summary = "랭킹 조회 기능", description = "랭킹 조회 기능")
+//    @ApiResponses(value = {
+//            @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = ChallengeResponseDto.class))),
+//            @ApiResponse(responseCode = "500", description = "에러", content = @Content(schema = @Schema(implementation = ChallengeResponseDto.class)))})
+//    @GetMapping
+//    public ResponseEntity<Page<RankingResponseDto>> getAllRanksDto(@RequestParam(defaultValue = "0") int page,
+//                                                                   @RequestParam(defaultValue = "10") int size) {
+//        Page<RankingResponseDto> rankingPage = rankingService.getRankingOrderedByScore(PageRequest.of(page, size, Sort.by("score").descending()));
+//        return ResponseEntity.ok(rankingPage);
+//    }

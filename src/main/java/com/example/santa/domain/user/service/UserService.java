@@ -3,10 +3,7 @@ package com.example.santa.domain.user.service;
 import com.example.santa.domain.preferredcategory.dto.PreferredCategoryRequestDto;
 import com.example.santa.domain.preferredcategory.dto.PreferredCategoryResponseDto;
 import com.example.santa.domain.rank.dto.RankingResponseDto;
-import com.example.santa.domain.user.dto.UserResponseDto;
-import com.example.santa.domain.user.dto.UserSignInRequestDto;
-import com.example.santa.domain.user.dto.UserSignupRequestDto;
-import com.example.santa.domain.user.dto.UserUpdateRequestDto;
+import com.example.santa.domain.user.dto.*;
 import com.example.santa.domain.userchallenge.dto.UserChallengeCompletionResponseDto;
 import com.example.santa.domain.usermountain.dto.UserMountainResponseDto;
 import com.example.santa.global.security.jwt.JwtToken;
@@ -30,7 +27,9 @@ public interface UserService {
     UserResponseDto findUserByEmail(String email);
 
     // Users read(관리자)
-    Page<UserResponseDto> findAllUser(Pageable pageable);
+    Page<UserResponseDto> findAllUser(String keyWord, Pageable pageable);
+
+    Page<UserReportResponseDto> findAllReportUser(String search, Pageable pageable);
 
     UserResponseDto updateUser(String email, UserUpdateRequestDto userUpdateRequestDto);
 

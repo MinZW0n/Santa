@@ -21,6 +21,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.Objects;
+
 @Service
 @Slf4j
 public class ChallengeServiceImpl implements ChallengeService{
@@ -28,23 +30,14 @@ public class ChallengeServiceImpl implements ChallengeService{
     private final ChallengeRepository challengeRepository;
     private final ChallengeResponseMapper challengeResponseMapper;
 
-    private final UserChallengeResponseMapper userChallengeResponseMapper;
-
-    private final UserRepository userRepository;
-
-    private final UserChallengeRepository userChallengeRepository;
-
     private final CategoryRepository categoryRepository;
     private final S3ImageService s3ImageService;
 
     @Autowired
-    public ChallengeServiceImpl(ChallengeRepository challengeRepository, UserChallengeRepository userChallengeRepository, UserRepository userRepository, CategoryRepository categoryRepository, ChallengeResponseMapper challengeResponseMapper, UserChallengeResponseMapper userChallengeResponseMapper, S3ImageService s3ImageService) {
+    public ChallengeServiceImpl(ChallengeRepository challengeRepository, CategoryRepository categoryRepository, ChallengeResponseMapper challengeResponseMapper, S3ImageService s3ImageService) {
         this.challengeRepository = challengeRepository;
-        this.userChallengeRepository = userChallengeRepository;
-        this.userRepository = userRepository;
         this.categoryRepository = categoryRepository;
         this.challengeResponseMapper = challengeResponseMapper;
-        this.userChallengeResponseMapper = userChallengeResponseMapper;
         this.s3ImageService = s3ImageService;
     }
 
@@ -57,7 +50,7 @@ public class ChallengeServiceImpl implements ChallengeService{
                 .orElseThrow(() -> new ServiceLogicException(ExceptionCode.CATEGORY_NOT_FOUND));
 
         MultipartFile imageFile = challengeCreateDto.getImageFile();
-        String imageUrl = "defaultUrl";
+        String imageUrl = "https://s3.ap-northeast-2.amazonaws.com/elice.santa/challenge_default_image.png";
         if (imageFile != null && !imageFile.isEmpty()) {
             imageUrl = s3ImageService.upload(imageFile);
         }
@@ -91,6 +84,15 @@ public class ChallengeServiceImpl implements ChallengeService{
 
     @Override
     public ChallengeResponseDto updateChallenge(Long id, ChallengeCreateDto challengeCreateDto) {
+        MultipartFile imageFile = challengeCreateDto.getImageFile();
+        String imageUrl = challengeCreateDto.getImage();
+        if (imageFile != null && !imageFile.isEmpty()) {
+            if(!Objects.equals(imageUrl, "https://s3.ap-northeast-2.amazonaws.com/elice.santa/challenge_default_image.png")){
+                s3ImageService.deleteImageFromS3(imageUrl);
+            }
+
+            imageUrl = s3ImageService.upload(imageFile);
+        }
         ChallengeResponseDto result = null;
         if (challengeRepository.existsById(id)) {
             Challenge challenge = challengeRepository.findById(id).get();

@@ -5,7 +5,13 @@ import com.example.santa.domain.meeting.dto.MeetingResponseDto;
 import com.example.santa.domain.meeting.dto.ParticipantDto;
 import com.example.santa.domain.meeting.service.MeetingService;
 import com.example.santa.domain.userchallenge.service.UserChallengeServiceImpl;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
@@ -29,12 +35,20 @@ public class MeetingController {
         this.userChallengeService = userChallengeService;
     }
 
+    @Operation(summary = "모임 생성 기능", description = "모임 생성")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = MeetingResponseDto.class)))
+    })
     @PostMapping
-    public MeetingResponseDto createMeeting(@AuthenticationPrincipal String email, @ModelAttribute @Valid MeetingDto meetingDto){
+    public ResponseEntity<MeetingResponseDto> createMeeting(@AuthenticationPrincipal String email, @ModelAttribute @Valid MeetingDto meetingDto){
         meetingDto.setUserEmail(email);
-        return meetingService.createMeeting(meetingDto);
+        return ResponseEntity.ok(meetingService.createMeeting(meetingDto));
     }
 
+    @Operation(summary = "모임 조회 기능", description = "모임 id 조회")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = MeetingResponseDto.class)))
+    })
     @GetMapping("/{meetingId}")
     public ResponseEntity<MeetingResponseDto> meetingDetail(@PathVariable(name = "meetingId") Long id){
 
@@ -42,6 +56,10 @@ public class MeetingController {
 
     }
 
+    @Operation(summary = "모임 참여 기능", description = "모임 id로 그 모임 참여")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = MeetingResponseDto.class)))
+    })
     @PostMapping("{meetingId}/participants")
     public ResponseEntity<?> joinMeeting(@AuthenticationPrincipal String email, @PathVariable(name = "meetingId") Long id){
 
@@ -50,9 +68,13 @@ public class MeetingController {
 
     }
 
+    @Operation(summary = "모임 조회 기능", description = "모든 모임 조회")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = MeetingResponseDto.class)))
+    })
     @GetMapping
-    public ResponseEntity<?> getAllMeetings(@RequestParam(name = "page", defaultValue = "0") int page,
-                                            @RequestParam(name = "size", defaultValue = "5") int size) {
+    public ResponseEntity<Page<MeetingResponseDto>> getAllMeetings(@RequestParam(name = "page", defaultValue = "0") int page,
+                                               @RequestParam(name = "size", defaultValue = "5") int size) {
         PageRequest pageRequest = PageRequest.of(page, size, Sort.by("id").descending());
         return ResponseEntity.ok(meetingService.getAllMeetings(pageRequest));
     }
@@ -63,19 +85,32 @@ public class MeetingController {
 //        return ResponseEntity.ok(meetingService.getAllMeetingsNoOffset(lastId, size));
 //    }
 
+    @Operation(summary = "모임 수정 기능(모임장,관리자)", description = "모임 수정")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = MeetingResponseDto.class)))
+    })
     @PatchMapping("/{meetingId}")
-    public ResponseEntity<MeetingResponseDto> updateMeeting(@PathVariable(name = "meetingId") Long id, @RequestBody @Valid MeetingDto meetingDto) {
-        return ResponseEntity.ok(meetingService.updateMeeting(id, meetingDto));
+    public ResponseEntity<MeetingResponseDto> updateMeeting(@AuthenticationPrincipal String email,
+            @PathVariable(name = "meetingId") Long id, @ModelAttribute @Valid MeetingDto meetingDto) {
+        return ResponseEntity.ok(meetingService.updateMeeting(email, id, meetingDto));
     }
 
+    @Operation(summary = "모임 삭제 기능(모임장,관리자)", description = "모임 삭제")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = MeetingResponseDto.class)))
+    })
     @DeleteMapping("/{meetingId}")
     public ResponseEntity<?> deleteMeeting(@AuthenticationPrincipal String email, @PathVariable(name = "meetingId") Long id) {
         meetingService.deleteMeeting(email,id);
         return ResponseEntity.ok().build();
     }
 
+    @Operation(summary = "모임 검색 기능", description = "모임 검색")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = MeetingResponseDto.class)))
+    })
     @GetMapping("/tag-search")
-    public ResponseEntity<?> getMeetingsByTag(@RequestParam(name = "tag") String tagName,
+    public ResponseEntity<Page<MeetingResponseDto>> getMeetingsByTag(@RequestParam(name = "tag") String tagName,
                                               @RequestParam(name = "page", defaultValue = "0") int page,
                                               @RequestParam(name = "size", defaultValue = "5") int size) {
         if (tagName != null) {
@@ -97,9 +132,12 @@ public class MeetingController {
 //
 //    }
 
-
+    @Operation(summary = "모임 검색 기능(카테고리)", description = "모임 카테고리 검색")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = MeetingResponseDto.class)))
+    })
     @GetMapping("/category-search")
-    public ResponseEntity<?> getMeetingsByCategoryName(@RequestParam(name = "category") String category,
+    public ResponseEntity<Page<MeetingResponseDto>> getMeetingsByCategoryName(@RequestParam(name = "category") String category,
                                                               @RequestParam(name = "page", defaultValue = "0") int page,
                                                               @RequestParam(name = "size", defaultValue = "5") int size) {
         PageRequest pageRequest = PageRequest.of(page, size, Sort.by("id").descending());
@@ -117,8 +155,12 @@ public class MeetingController {
 //
 //    }
 
+    @Operation(summary = "모임 조회 기능", description = "모임 인기도순 조회")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = MeetingResponseDto.class)))
+    })
     @GetMapping("/participants")
-    public ResponseEntity<?> getAllMeetingsByParticipantCount(@RequestParam(name = "page", defaultValue = "0") int page,
+    public ResponseEntity<Page<MeetingResponseDto>> getAllMeetingsByParticipantCount(@RequestParam(name = "page", defaultValue = "0") int page,
                                                               @RequestParam(name = "size", defaultValue = "5") int size) {
         PageRequest pageRequest = PageRequest.of(page, size, Sort.by("id").descending());
         return ResponseEntity.ok(meetingService.getAllMeetingsByParticipantCount(pageRequest));
@@ -130,9 +172,12 @@ public class MeetingController {
 //        return ResponseEntity.ok(meetingService.getAllMeetingsByParticipantCountNoOffset(lastId, size));
 //    }
 
-
+    @Operation(summary = "모임 조회 기능", description = "내가 참여중인 모임 조회")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = MeetingResponseDto.class)))
+    })
     @GetMapping("/my-meetings")
-    public ResponseEntity<?> getMyMeetings(@AuthenticationPrincipal String email,
+    public ResponseEntity<Page<MeetingResponseDto>> getMyMeetings(@AuthenticationPrincipal String email,
                                            @RequestParam(name = "page", defaultValue = "0") int page,
                                            @RequestParam(name = "size", defaultValue = "5") int size) {
         PageRequest pageRequest = PageRequest.of(page, size, Sort.by("id").descending());
@@ -146,8 +191,12 @@ public class MeetingController {
 //        return ResponseEntity.ok(meetingService.getMyMeetingsNoOffset(lastId, size, email));
 //    }
 
+    @Operation(summary = "모임 종료 기능(모임장)", description = "모임 종료")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = MeetingResponseDto.class)))
+    })
     @PostMapping("/{meetingId}/end")
-    public ResponseEntity<?> endMeeting(@AuthenticationPrincipal String email,
+    public ResponseEntity<List<ParticipantDto>> endMeeting(@AuthenticationPrincipal String email,
                                         @PathVariable(name = "meetingId") Long id) {
 
         List<ParticipantDto> participants = meetingService.endMeeting(email, id);
