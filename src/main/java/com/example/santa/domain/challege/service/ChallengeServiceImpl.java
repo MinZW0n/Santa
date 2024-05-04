@@ -30,23 +30,14 @@ public class ChallengeServiceImpl implements ChallengeService{
     private final ChallengeRepository challengeRepository;
     private final ChallengeResponseMapper challengeResponseMapper;
 
-    private final UserChallengeResponseMapper userChallengeResponseMapper;
-
-    private final UserRepository userRepository;
-
-    private final UserChallengeRepository userChallengeRepository;
-
     private final CategoryRepository categoryRepository;
     private final S3ImageService s3ImageService;
 
     @Autowired
-    public ChallengeServiceImpl(ChallengeRepository challengeRepository, UserChallengeRepository userChallengeRepository, UserRepository userRepository, CategoryRepository categoryRepository, ChallengeResponseMapper challengeResponseMapper, UserChallengeResponseMapper userChallengeResponseMapper, S3ImageService s3ImageService) {
+    public ChallengeServiceImpl(ChallengeRepository challengeRepository, CategoryRepository categoryRepository, ChallengeResponseMapper challengeResponseMapper, S3ImageService s3ImageService) {
         this.challengeRepository = challengeRepository;
-        this.userChallengeRepository = userChallengeRepository;
-        this.userRepository = userRepository;
         this.categoryRepository = categoryRepository;
         this.challengeResponseMapper = challengeResponseMapper;
-        this.userChallengeResponseMapper = userChallengeResponseMapper;
         this.s3ImageService = s3ImageService;
     }
 

@@ -38,7 +38,8 @@ public class MountainController {
     public ResponseEntity<Page<MountainResponseDto>> getAllMountains(@RequestParam(defaultValue = "0") int page,
                                                                      @RequestParam(defaultValue = "10") int size){
         Page<MountainResponseDto> mountains = mountainService.findAllMountains(PageRequest.of(page, size));
-        return new ResponseEntity<>(mountains, HttpStatus.OK);
+        return ResponseEntity.ok(mountains); //리소스사용감소 스태틱메서드
+
     }
     @Operation(summary = "산 개별 조회 기능", description = "산 개별 조회 기능")
     @ApiResponses(value = {
@@ -47,7 +48,8 @@ public class MountainController {
     @GetMapping("/{id}")
     public ResponseEntity<MountainResponseDto> getMountainById(@PathVariable(name = "id") Long id){
         MountainResponseDto mountain = mountainService.findMountainById(id);
-        return new ResponseEntity<>(mountain,HttpStatus.OK);
+        return ResponseEntity.ok(mountain);
+
     }
 
     @Operation(summary = "등산 인증 기능(유저 마운틴 등록)", description = "등산 인증 기능(유저 마운틴 등록)")
@@ -56,37 +58,36 @@ public class MountainController {
             @ApiResponse(responseCode = "500", description = "에러", content = @Content(schema = @Schema(implementation = UserMountainResponseDto.class)))})
     @PostMapping("/verify")
     public ResponseEntity<UserMountainResponseDto> createUserMountain(@AuthenticationPrincipal String email, @RequestBody UserMountainVerifyRequestDto request) {
-        UserMountainResponseDto userMountain = userMountainService.verifyAndCreateUserMountain(
-                request.getLatitude(), request.getLongitude(), request.getClimbDate(), email);
+        UserMountainResponseDto userMountain = userMountainService.verifyAndCreateUserMountain(request, email);
+
         return ResponseEntity.ok(userMountain);
     }
 
-    @Operation(summary = "등산 인증 기능(유저 마운틴 등록)", description = "등산 인증 기능(유저 마운틴 등록)")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "성공",
-                    content = @Content(schema = @Schema(implementation = UserMountainResponseDto.class))),
-            @ApiResponse(responseCode = "500", description = "에러", content = @Content(schema = @Schema(implementation = UserMountainResponseDto.class)))})
-    @PostMapping("/test")
-    public ResponseEntity<UserMountainResponseDto> createUserMountain1(@AuthenticationPrincipal String email, @RequestParam double latitude, double longitude, LocalDate climbDate) {
 
-        System.out.println(email);
-        UserMountainResponseDto userMountains = userMountainService.verifyAndCreateUserMountain(latitude,longitude,climbDate, email );
-
-//            return new ResponseEntity<>(userMountains, HttpStatus.CREATED);
-        return ResponseEntity.ok(userMountains);
-    }
-
-    @Operation(summary = "등산 인증 기능(유저 마운틴 등록)", description = "등산 인증 기능(유저 마운틴 등록)")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation =UserMountainResponseDto.class))),
-            @ApiResponse(responseCode = "500", description = "에러", content = @Content(schema = @Schema(implementation = UserMountainResponseDto.class)))})
-    @PostMapping("/test2")
-    public ResponseEntity<UserMountainResponseDto> createUserMountain1(@AuthenticationPrincipal String email, @io.swagger.v3.oas.annotations.parameters.RequestBody UserMountainVerifyRequestDto request) {
-
-        System.out.println(email);
-        UserMountainResponseDto userMountains = userMountainService.verifyAndCreateUserMountain1(request, email);
-
-
-        return ResponseEntity.ok(userMountains);
-    }
 }
+//    @Operation(summary = "등산 인증 기능(유저 마운틴 등록)", description = "등산 인증 기능(유저 마운틴 등록)")
+//    @ApiResponses(value = {
+//            @ApiResponse(responseCode = "200", description = "성공",
+//                    content = @Content(schema = @Schema(implementation = UserMountainResponseDto.class))),
+//            @ApiResponse(responseCode = "500", description = "에러", content = @Content(schema = @Schema(implementation = UserMountainResponseDto.class)))})
+//    @PostMapping("/test")
+//    public ResponseEntity<UserMountainResponseDto> createUserMountain1(@AuthenticationPrincipal String email, @RequestParam double latitude, double longitude, LocalDate climbDate) {
+//
+//        UserMountainResponseDto userMountains = userMountainService.verifyAndCreateUserMountain(latitude,longitude,climbDate, email );
+//
+//        return ResponseEntity.ok(userMountains);
+//    }
+
+//    @Operation(summary = "등산 인증 기능(유저 마운틴 등록)", description = "등산 인증 기능(유저 마운틴 등록)")
+//    @ApiResponses(value = {
+//            @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation =UserMountainResponseDto.class))),
+//            @ApiResponse(responseCode = "500", description = "에러", content = @Content(schema = @Schema(implementation = UserMountainResponseDto.class)))})
+//    @PostMapping("/test2")
+//    public ResponseEntity<UserMountainResponseDto> createUserMountain1(@AuthenticationPrincipal String email, @io.swagger.v3.oas.annotations.parameters.RequestBody UserMountainVerifyRequestDto request) {
+//
+//        System.out.println(email);
+//        UserMountainResponseDto userMountains = userMountainService.verifyAndCreateUserMountain1(request, email);
+//
+//
+//        return ResponseEntity.ok(userMountains);
+//    }

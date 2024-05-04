@@ -47,7 +47,7 @@ public class RankingServiceImpl implements RankingService{
             rankingRepository.save(ranking);
         }
     }
-
+    @Override
     public Page<RankingResponseDto> getRankingOrderedByScore(Pageable pageable) {
         Page<Ranking> rankingsPage = rankingRepository.findAllByOrderByScoreDesc(pageable);
 

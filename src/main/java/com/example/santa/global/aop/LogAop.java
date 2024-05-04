@@ -41,10 +41,16 @@ public class LogAop {
         log.info("[ 호출 전] 호출 메서드 {}", method.getName());
 
         Object[] args = joinPoint.getArgs();
-        if (args.length <= 0) log.info("매개변수가 없습니다.");
-        for (Object arg : args) {
-            log.info("매개변수 타입 = {}", arg.getClass().getSimpleName());
-            log.info("매개변수 값 = {}", arg);
+        if (args == null || args.length == 0) {
+            log.info("매개변수가 없습니다.");
+        } else {
+            for (Object arg : args) {
+                if (arg != null) {
+                    log.info("매개변수 타입 = {}, 매개변수 값 = {}", arg.getClass().getSimpleName(), arg);
+                } else {
+                    log.info("매개변수 값 = null");
+                }
+            }
         }
 
         // 현재 HTTP 요청에 접근

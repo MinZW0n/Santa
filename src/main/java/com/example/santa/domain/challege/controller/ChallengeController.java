@@ -24,15 +24,12 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/challenges")
+@RequiredArgsConstructor
 public class ChallengeController {
 
 
     private final ChallengeService challengeService;
 
-    @Autowired
-    public ChallengeController(ChallengeService challengeService) {
-        this.challengeService = challengeService;
-    }
 
     @Operation(summary = "챌린지 조회 기능", description = "전체 챌린지 조회")
     @ApiResponses(value = {
@@ -41,10 +38,10 @@ public class ChallengeController {
     @GetMapping
     public ResponseEntity<Page<ChallengeResponseDto>> getAllChallenges(@RequestParam(defaultValue = "0") int page,
                                                                        @RequestParam(defaultValue = "10") int size){
-//        PageRequest pageRequest = PageRequest.of(page, size , Sort.by("createdDate").descending());
-//        Page<ChallengeResponseDto> challenges =challengeService.findAllChallenges(pageRequest);
+
         Page<ChallengeResponseDto> challenges = challengeService.findAllChallenges(PageRequest.of(page, size, Sort.by("createdDate").descending()));
-        return new ResponseEntity<>(challenges, HttpStatus.OK);
+        return ResponseEntity.ok(challenges);
+
     }
 
     //챌린지 ID로 조회
