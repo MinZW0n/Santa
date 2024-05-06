@@ -6,8 +6,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.List;
+
 public interface ReportRepository extends JpaRepository<Report, Long> {
     Page<Report> findAll(Pageable pageable);
     // 특정 신고자와 특정 참가자에 대한 신고가 있는지 확인하는 쿼리 메소드
     boolean existsByReporterAndReportedParticipant(User reporter, User reportedParticipant);
+    List<Report> findByReportedParticipant(User reportedParticipant);
 }

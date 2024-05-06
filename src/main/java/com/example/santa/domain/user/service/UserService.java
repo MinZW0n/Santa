@@ -25,6 +25,7 @@ public interface UserService {
     String generateAccessToken(String refreshToken);
     // read
     UserResponseDto findUserByEmail(String email);
+    void deleteUser(String email);
 
     // Users read(관리자)
     Page<UserResponseDto> findAllUser(String keyWord, Pageable pageable);
@@ -54,4 +55,6 @@ public interface UserService {
 
     // 선호카테고리 전체삭제
     void deleteAllPreferredCategory(String email);
+
+    void deleteUserFromAdmin(Long id);
 }

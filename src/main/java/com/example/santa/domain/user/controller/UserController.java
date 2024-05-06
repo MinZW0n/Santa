@@ -121,6 +121,26 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK).body(userByEmail);
     }
 
+    @DeleteMapping
+    @Operation(summary = "회원 탈퇴", description = "회원 탈퇴")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = void.class)))})
+    public ResponseEntity<?> deleteUser(@AuthenticationPrincipal String email) {
+        userService.deleteUser(email);
+        return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("{userId}")
+    @Operation(summary = "회원 삭제(관리자)", description = "회원 삭제(관리자)")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = void.class))),
+            @ApiResponse(responseCode = "500", description = "에러", content = @Content(schema = @Schema(implementation = void.class)))})
+    @PreAuthorize("hasAuthority('ADMIN')")
+    public ResponseEntity<?> deleteUser(@RequestParam(name = "userId") Long id) {
+        userService.deleteUserFromAdmin(id);
+        return ResponseEntity.ok().build();
+    }
+
 //    @GetMapping("")
 //    @Operation(summary = "관리자 회원 조회", description = "관리자 회원조회")
 //    @PreAuthorize("hasAuthority('ADMIN')")

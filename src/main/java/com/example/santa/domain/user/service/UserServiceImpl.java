@@ -9,6 +9,8 @@ import com.example.santa.domain.preferredcategory.repository.PreferredCategoryRe
 import com.example.santa.domain.rank.dto.RankingResponseDto;
 import com.example.santa.domain.rank.entity.Ranking;
 import com.example.santa.domain.rank.repository.RankingRepository;
+import com.example.santa.domain.report.entity.Report;
+import com.example.santa.domain.report.repository.ReportRepository;
 import com.example.santa.domain.user.dto.*;
 import com.example.santa.domain.user.entity.Password;
 import com.example.santa.domain.user.entity.Role;
@@ -54,6 +56,7 @@ public class UserServiceImpl implements UserService {
     private final CategoryRepository categoryRepository;
     private final RankingRepository rankingRepository;
     private final S3ImageService s3ImageService;
+    private final ReportRepository reportRepository;
 
     private final UserMountainResponseDtoMapper userMountainResponseDtoMapper;
     private final PreferredCategoryResponseDtoMapper preferredCategoryResponseDtoMapper;
@@ -170,6 +173,25 @@ public class UserServiceImpl implements UserService {
         return userResponseDtoMapper.toDto(user);
     }
 
+    @Transactional
+    @Override
+    public void deleteUser(String email){
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new ServiceLogicException(ExceptionCode.USER_NOT_FOUND));
+        // 해당 사용자가 신고된 이력이 있는지 확인
+        List<Report> reports = reportRepository.findByReportedParticipant(user);
+        if (!reports.isEmpty()) {
+            // 신고된 이력이 있다면 탈퇴 처리를 막음
+            throw new ServiceLogicException(ExceptionCode.USER_REPORT_EXIST);
+        }
+        userRepository.delete(user);
+    }
+
+    @Transactional
+    @Override
+    public void deleteUserFromAdmin(Long id){
+        userRepository.deleteById(id);
+    }
 
     @Transactional
     @Override

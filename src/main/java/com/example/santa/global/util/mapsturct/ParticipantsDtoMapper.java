@@ -11,6 +11,7 @@ public interface ParticipantsDtoMapper extends EntityMapper<ParticipantDto, Part
 
     @Mapping(source = "user.id", target = "userId")
     @Mapping(source = "user.name", target = "userName")
+    @Mapping(source = "user.nickname", target = "userNickname")
     @Mapping(source = "user.image", target = "userImage")
     ParticipantDto toDto(Participant participant);
 

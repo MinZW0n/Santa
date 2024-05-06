@@ -1,6 +1,13 @@
 package com.example.santa.domain.user.entity;
 
 import com.example.santa.domain.common.BaseEntity;
+import com.example.santa.domain.meeting.entity.Meeting;
+import com.example.santa.domain.meeting.entity.Participant;
+import com.example.santa.domain.preferredcategory.entity.PreferredCategory;
+import com.example.santa.domain.rank.entity.Ranking;
+import com.example.santa.domain.report.entity.Report;
+import com.example.santa.domain.userchallenge.entity.UserChallenge;
+import com.example.santa.domain.usermountain.entity.UserMountain;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
@@ -43,6 +50,30 @@ public class User extends BaseEntity implements UserDetails {
     private String socialId;
     //누적 높이 저장
     private double accumulatedHeight;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Participant> participants;
+
+    @OneToMany(mappedBy = "leader", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Meeting> meetings;
+
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Ranking ranking;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<UserMountain> userMountains;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<UserChallenge> userChallenges;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<PreferredCategory> preferredCategories;
+
+    @OneToMany(mappedBy = "reporter", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Report> reporters;
+
+    @OneToMany(mappedBy = "reportedParticipant", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Report> reports;
 
     @Builder
     public User(String email, Password password, String name, String nickname, String phoneNumber, String image, Role role, SocialType socialType, String socialId, double accumulatedHeight) {

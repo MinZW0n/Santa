@@ -97,7 +97,7 @@ public class MeetingController {
 
     @Operation(summary = "모임 삭제 기능(모임장,관리자)", description = "모임 삭제")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = MeetingResponseDto.class)))
+            @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = void.class)))
     })
     @DeleteMapping("/{meetingId}")
     public ResponseEntity<?> deleteMeeting(@AuthenticationPrincipal String email, @PathVariable(name = "meetingId") Long id) {
