@@ -1,19 +1,24 @@
 package com.example.santa.domain.user.controller;
 
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import com.example.santa.domain.user.oauth2.KakaoParams;
+import com.example.santa.domain.user.oauth2.OAuthService;
+import com.example.santa.global.security.jwt.JwtToken;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
-@Controller
+@RestController("/oauth2")
+@RequiredArgsConstructor
+@Slf4j
 public class OAuth2Controller {
-    // OAuth2 로그인 시 최초 로그인인 경우 회원가입 진행, 필요한 정보를 쿼리파리미터로 받음
-    @GetMapping("/oauth2/signup")
-    public String loadOAuthSignup(@RequestParam String email, @RequestParam String socialType, @RequestParam String socialId, Model model) {
-        model.addAttribute("email", email);
-        model.addAttribute("socialType", socialType);
-        model.addAttribute("socialId", socialId);
-        return "users/signup";
-    }
+    private final OAuthService oAuthService;
+    @PostMapping("/kakao")
+    public ResponseEntity<JwtToken> KakaoLogin(@RequestBody KakaoParams kakaoParams){
+        log.debug("Kakao 인증키 {} ", kakaoParams.getAuthorizationCode());
+        JwtToken jwtToken = oAuthService.getUserByOauthSignIn(kakaoParams);
 
+        return ResponseEntity.status(HttpStatus.OK).body(jwtToken);
+    }
 }
