@@ -3,17 +3,17 @@ package com.example.santa.domain.challege.service;
 import com.example.santa.domain.category.entity.Category;
 import com.example.santa.domain.category.repository.CategoryRepository;
 import com.example.santa.domain.challege.dto.ChallengeCreateDto;
+import com.example.santa.domain.challege.dto.ChallengeParticipationResponseDto;
 import com.example.santa.domain.challege.dto.ChallengeResponseDto;
 import com.example.santa.domain.challege.entity.Challenge;
-import com.example.santa.domain.user.repository.UserRepository;
 import com.example.santa.domain.userchallenge.repository.UserChallengeRepository;
 import com.example.santa.global.constant.Constants;
 import com.example.santa.global.exception.ExceptionCode;
 import com.example.santa.global.exception.ServiceLogicException;
 import com.example.santa.global.util.S3ImageService;
+import com.example.santa.global.util.mapsturct.ChallengeParticipationResponseDtoMapper;
 import com.example.santa.global.util.mapsturct.ChallengeResponseMapper;
 import com.example.santa.domain.challege.repository.ChallengeRepository;
-import com.example.santa.global.util.mapsturct.UserChallengeResponseMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -22,6 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
 import java.util.Objects;
 
 @Service
@@ -31,14 +32,21 @@ public class ChallengeServiceImpl implements ChallengeService{
     private final ChallengeRepository challengeRepository;
     private final ChallengeResponseMapper challengeResponseMapper;
 
+
     private final CategoryRepository categoryRepository;
+
+    private final UserChallengeRepository userChallengeRepository;
+    private final ChallengeParticipationResponseDtoMapper challengeParticipationResponseDtoMapper;
+
     private final S3ImageService s3ImageService;
 
     @Autowired
-    public ChallengeServiceImpl(ChallengeRepository challengeRepository, CategoryRepository categoryRepository, ChallengeResponseMapper challengeResponseMapper, S3ImageService s3ImageService) {
+    public ChallengeServiceImpl(ChallengeRepository challengeRepository, CategoryRepository categoryRepository, UserChallengeRepository userChallengeRepository, ChallengeResponseMapper challengeResponseMapper, ChallengeParticipationResponseDtoMapper challengeParticipationResponseDtoMapper, S3ImageService s3ImageService) {
         this.challengeRepository = challengeRepository;
         this.categoryRepository = categoryRepository;
+        this.userChallengeRepository =userChallengeRepository;
         this.challengeResponseMapper = challengeResponseMapper;
+        this.challengeParticipationResponseDtoMapper = challengeParticipationResponseDtoMapper;
         this.s3ImageService = s3ImageService;
     }
 
@@ -80,6 +88,15 @@ public class ChallengeServiceImpl implements ChallengeService{
         return challengeRepository.findById(id)
                 .map(challengeResponseMapper::toDto)
                 .orElse(null);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<ChallengeParticipationResponseDto> getUsersParticipationInChallenges() {
+//        List<ChallengeParticipationResponseDto> challengeParticipations = userChallengeRepository.countUsersPerChallenge()
+//                .
+//        ChallengeParticipationResponseDto challengeParticipations = userChallengeRepository.countUsersPerChallenge();
+        return userChallengeRepository.countUsersPerChallenge();
     }
 
 

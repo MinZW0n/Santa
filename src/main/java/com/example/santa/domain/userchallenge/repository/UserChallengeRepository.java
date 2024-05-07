@@ -1,11 +1,10 @@
 package com.example.santa.domain.userchallenge.repository;
 
-import com.example.santa.domain.category.entity.Category;
+import com.example.santa.domain.challege.dto.ChallengeParticipationResponseDto;
 import com.example.santa.domain.user.entity.User;
 import com.example.santa.domain.userchallenge.entity.UserChallenge;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -20,4 +19,6 @@ public interface UserChallengeRepository extends JpaRepository<UserChallenge,Lon
    Long countCompletedChallengesByUserEmail(String userEmail);
 
 
+   @Query("SELECT new com.example.santa.domain.challege.dto.ChallengeParticipationResponseDto(c.challenge.name, COUNT(DISTINCT c.user.id)) FROM UserChallenges c GROUP BY c.challenge.name")
+   List<ChallengeParticipationResponseDto> countUsersPerChallenge();
 }
