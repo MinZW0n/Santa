@@ -16,6 +16,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -39,6 +40,7 @@ public class MeetingController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = MeetingResponseDto.class)))
     })
+    @PreAuthorize("hasAuthority('USER') OR hasAuthority('ADMIN')")
     @PostMapping
     public ResponseEntity<MeetingResponseDto> createMeeting(@AuthenticationPrincipal String email, @ModelAttribute @Valid MeetingDto meetingDto){
         meetingDto.setUserEmail(email);
@@ -89,6 +91,7 @@ public class MeetingController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = MeetingResponseDto.class)))
     })
+    @PreAuthorize("hasAuthority('USER') OR hasAuthority('ADMIN')")
     @PatchMapping("/{meetingId}")
     public ResponseEntity<MeetingResponseDto> updateMeeting(@AuthenticationPrincipal String email,
             @PathVariable(name = "meetingId") Long id, @ModelAttribute @Valid MeetingDto meetingDto) {
@@ -99,6 +102,7 @@ public class MeetingController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = void.class)))
     })
+    @PreAuthorize("hasAuthority('USER') OR hasAuthority('ADMIN')")
     @DeleteMapping("/{meetingId}")
     public ResponseEntity<?> deleteMeeting(@AuthenticationPrincipal String email, @PathVariable(name = "meetingId") Long id) {
         meetingService.deleteMeeting(email,id);

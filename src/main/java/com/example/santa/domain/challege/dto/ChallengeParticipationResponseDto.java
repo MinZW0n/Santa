@@ -5,14 +5,15 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Getter
-@Setter
-@AllArgsConstructor
-@NoArgsConstructor
-public class ChallengeParticipationResponseDto {
-
-    private String challengeName;
-    private long userCount;
-
-
-}
+//@Getter
+//@Setter
+//@AllArgsConstructor
+//@NoArgsConstructor
+//public class ChallengeParticipationResponseDto {
+//
+//    private Long challengeId;
+//    private String challengeName;
+//    private long userCount;
+//
+//
+//}

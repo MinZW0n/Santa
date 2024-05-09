@@ -54,14 +54,14 @@ public class ChallengeController {
         return ResponseEntity.ok(challengeById);
     }
 
-    @Operation(summary = "챌린지 별 참여 인원 조회 기능", description = "챌린지 별 참여 인원 조회")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation =ChallengeParticipationResponseDto.class)))})
-    @GetMapping("/participants")
-    public ResponseEntity<List<ChallengeParticipationResponseDto>> getAllUsersParticipationInChallenges(){
-        List<ChallengeParticipationResponseDto> challengeParticipation = challengeService.getUsersParticipationInChallenges();
-        return ResponseEntity.ok(challengeParticipation);
-    }
+//    @Operation(summary = "챌린지 별 참여 인원 조회 기능", description = "챌린지 별 참여 인원 조회")
+//    @ApiResponses(value = {
+//            @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation =ChallengeParticipationResponseDto.class)))})
+//    @GetMapping("/participants")
+//    public ResponseEntity<List<ChallengeParticipationResponseDto>> getAllUsersParticipationInChallenges(){
+//        List<ChallengeParticipationResponseDto> challengeParticipation = challengeService.getUsersParticipationInChallenges();
+//        return ResponseEntity.ok(challengeParticipation);
+//    }
 
 
     // 챌린지 등록

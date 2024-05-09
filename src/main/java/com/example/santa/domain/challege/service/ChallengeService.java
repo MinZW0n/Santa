@@ -17,7 +17,7 @@ public interface ChallengeService {
 
     ChallengeResponseDto findChallengeById(Long id);
 
-    List<ChallengeParticipationResponseDto> getUsersParticipationInChallenges();
+//    List<ChallengeParticipationResponseDto> getUsersParticipationInChallenges();
 
     ChallengeResponseDto updateChallenge(Long id, ChallengeCreateDto challengeCreateDto);
 

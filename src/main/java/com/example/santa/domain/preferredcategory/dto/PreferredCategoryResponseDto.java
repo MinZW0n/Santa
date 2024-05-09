@@ -6,5 +6,5 @@ import lombok.Setter;
 @Getter
 @Setter
 public class PreferredCategoryResponseDto {
-    private PreferredCategorySelectedDto category;
+    private String categoryName;
 }

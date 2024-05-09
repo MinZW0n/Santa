@@ -3,7 +3,6 @@ package com.example.santa.domain.challege.service;
 import com.example.santa.domain.category.entity.Category;
 import com.example.santa.domain.category.repository.CategoryRepository;
 import com.example.santa.domain.challege.dto.ChallengeCreateDto;
-import com.example.santa.domain.challege.dto.ChallengeParticipationResponseDto;
 import com.example.santa.domain.challege.dto.ChallengeResponseDto;
 import com.example.santa.domain.challege.entity.Challenge;
 import com.example.santa.domain.userchallenge.repository.UserChallengeRepository;
@@ -87,14 +86,14 @@ public class ChallengeServiceImpl implements ChallengeService{
                 .orElse(null);
     }
 
-    @Override
-    @Transactional(readOnly = true)
-    public List<ChallengeParticipationResponseDto> getUsersParticipationInChallenges() {
-//        List<ChallengeParticipationResponseDto> challengeParticipations = userChallengeRepository.countUsersPerChallenge()
-//                .
-//        ChallengeParticipationResponseDto challengeParticipations = userChallengeRepository.countUsersPerChallenge();
-        return userChallengeRepository.countUsersPerChallenge();
-    }
+//    @Override
+//    @Transactional(readOnly = true)
+//    public List<ChallengeParticipationResponseDto> getUsersParticipationInChallenges() {
+////        List<ChallengeParticipationResponseDto> challengeParticipations = userChallengeRepository.countUsersPerChallenge()
+////                .
+////        ChallengeParticipationResponseDto challengeParticipations = userChallengeRepository.countUsersPerChallenge();
+//        return userChallengeRepository.countUsersPerChallenge();
+//    }
 
 
     @Override

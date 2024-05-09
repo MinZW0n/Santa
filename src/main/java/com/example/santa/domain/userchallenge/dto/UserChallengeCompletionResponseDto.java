@@ -1,7 +1,5 @@
 package com.example.santa.domain.userchallenge.dto;
 
-import com.example.santa.domain.challege.dto.ChallengeNameResponseDto;
-import com.example.santa.domain.challege.entity.Challenge;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -16,5 +14,8 @@ import java.time.LocalDate;
 public class UserChallengeCompletionResponseDto {
     private LocalDate completionDate;
     private Integer progress;
-    private ChallengeNameResponseDto challenge;
+    private String challengeName;
+    private String challengeDescription;
+    private String challengeImage;
+    private Integer challengeClearStandard;
 }

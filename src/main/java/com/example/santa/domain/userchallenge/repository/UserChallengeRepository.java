@@ -19,6 +19,6 @@ public interface UserChallengeRepository extends JpaRepository<UserChallenge,Lon
    Long countCompletedChallengesByUserEmail(String userEmail);
 
 
-   @Query("SELECT new com.example.santa.domain.challege.dto.ChallengeParticipationResponseDto(c.challenge.name, COUNT(DISTINCT c.user.id)) FROM UserChallenges c GROUP BY c.challenge.name")
-   List<ChallengeParticipationResponseDto> countUsersPerChallenge();
+//   @Query("SELECT new com.example.santa.domain.challege.dto.ChallengeParticipationResponseDto(c.challenge.id, COUNT(DISTINCT c.user.id)) FROM UserChallenges c GROUP BY c.challenge.name")
+//   List<ChallengeParticipationResponseDto> countUsersPerChallenge();
 }

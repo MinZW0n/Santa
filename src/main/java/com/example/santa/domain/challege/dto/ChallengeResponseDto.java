@@ -16,5 +16,5 @@ public class ChallengeResponseDto {
     private String description;
     private String image;
     private Integer clearStandard;
-    private CreateDto category;
+    private String categoryName;
 }
