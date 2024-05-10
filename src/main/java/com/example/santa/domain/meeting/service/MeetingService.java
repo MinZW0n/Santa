@@ -11,7 +11,7 @@ import java.util.List;
 
 public interface MeetingService {
 
-    MeetingResponseDto createMeeting(MeetingDto meetingDto);
+    MeetingResponseDto createMeeting(String email, MeetingDto meetingDto);
     MeetingResponseDto meetingDetail(Long id);
     Participant joinMeeting(Long id, String userEmail);
     Page<MeetingResponseDto> getAllMeetings(Pageable pageable);

@@ -43,8 +43,7 @@ public class MeetingController {
     @PreAuthorize("hasAuthority('USER') OR hasAuthority('ADMIN')")
     @PostMapping
     public ResponseEntity<MeetingResponseDto> createMeeting(@AuthenticationPrincipal String email, @ModelAttribute @Valid MeetingDto meetingDto){
-        meetingDto.setUserEmail(email);
-        return ResponseEntity.ok(meetingService.createMeeting(meetingDto));
+        return ResponseEntity.ok(meetingService.createMeeting(email, meetingDto));
     }
 
     @Operation(summary = "모임 조회 기능", description = "모임 id 조회")

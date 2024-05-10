@@ -81,7 +81,7 @@ public class UserController {
     @PostMapping("/verify-email")
     @Operation(summary = "이메일 인증", description = "이메일 인증")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description = "성공", content = @Content(schema = @Schema(implementation = String.class)))})
+            @ApiResponse(responseCode = "201", description = "성공", content = @Content(schema = @Schema(implementation = Boolean.class)))})
     public ResponseEntity<Boolean> verifyEmail(@RequestBody @Valid EmailCheckDto emailCheckDto) {
         Boolean verifyEmail = emailSendService.verifyEmail(emailCheckDto.getAuthNumber(), emailCheckDto.getEmail());
         return ResponseEntity.status(HttpStatus.OK).body(verifyEmail);

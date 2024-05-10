@@ -54,12 +54,12 @@ public class MeetingServiceImpl implements MeetingService {
     }
 
     @Override
-    public MeetingResponseDto createMeeting(MeetingDto meetingDto){
+    public MeetingResponseDto createMeeting(String email, MeetingDto meetingDto){
         // dto에서 불러온 카테고리명으로 카테고리를 가져옴
         Category category = categoryRepository.findByName(meetingDto.getCategoryName())
                 .orElseThrow(() -> new ServiceLogicException(ExceptionCode.CATEGORY_NOT_FOUND));
         // 현재 로그인 한 유저를 불러옴
-        User leader = userRepository.findByEmail(meetingDto.getUserEmail())
+        User leader = userRepository.findByEmail(email)
                 .orElseThrow(() -> new ServiceLogicException(ExceptionCode.USER_NOT_FOUND));
 
         // 이미 같은 날짜에 다른 모임에 참여 중인지 확인
