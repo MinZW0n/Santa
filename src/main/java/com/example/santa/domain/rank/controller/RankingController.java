@@ -1,6 +1,5 @@
 package com.example.santa.domain.rank.controller;
 
-import com.example.santa.domain.challege.dto.ChallengeResponseDto;
 import com.example.santa.domain.rank.dto.RankingResponseDto;
 import com.example.santa.domain.rank.service.RankingService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -16,9 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import java.nio.file.attribute.UserPrincipal;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 

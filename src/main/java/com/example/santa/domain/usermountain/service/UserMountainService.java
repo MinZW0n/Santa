@@ -9,10 +9,6 @@ import java.util.Date;
 import java.util.List;
 
 public interface UserMountainService {
-
-
-//    UserMountainResponseDto verifyAndCreateUserMountain(double latitude, double longitude, LocalDate climbDate, String email );
-
     UserMountainResponseDto verifyAndCreateUserMountain(UserMountainVerifyRequestDto userMountainVerifyRequestDto,String email);
 
 }

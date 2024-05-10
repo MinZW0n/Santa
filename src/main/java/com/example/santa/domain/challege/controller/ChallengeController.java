@@ -2,7 +2,6 @@ package com.example.santa.domain.challege.controller;
 
 import com.example.santa.domain.challege.dto.ChallengeCreateDto;
 import com.example.santa.domain.challege.dto.ChallengeResponseDto;
-import com.example.santa.domain.challege.entity.Challenge;
 import com.example.santa.domain.challege.service.ChallengeService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -11,16 +10,13 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/challenges")
@@ -52,15 +48,6 @@ public class ChallengeController {
         ChallengeResponseDto challengeById = challengeService.findChallengeById(id);
         return ResponseEntity.ok(challengeById);
     }
-
-//    @Operation(summary = "챌린지 별 참여 인원 조회 기능", description = "챌린지 별 참여 인원 조회")
-//    @ApiResponses(value = {
-//            @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation =ChallengeParticipationResponseDto.class)))})
-//    @GetMapping("/participants")
-//    public ResponseEntity<List<ChallengeParticipationResponseDto>> getAllUsersParticipationInChallenges(){
-//        List<ChallengeParticipationResponseDto> challengeParticipation = challengeService.getUsersParticipationInChallenges();
-//        return ResponseEntity.ok(challengeParticipation);
-//    }
 
 
     // 챌린지 등록

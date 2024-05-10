@@ -1,16 +1,11 @@
 package com.example.santa.domain.usermountain.service;
 
-import ch.qos.logback.classic.Logger;
 import com.example.santa.domain.category.entity.Category;
 import com.example.santa.domain.category.repository.CategoryRepository;
-import com.example.santa.domain.challege.entity.Challenge;
-import com.example.santa.domain.challege.repository.ChallengeRepository;
 import com.example.santa.domain.mountain.entity.Mountain;
 import com.example.santa.domain.mountain.repository.MountainRepository;
 import com.example.santa.domain.user.entity.User;
 import com.example.santa.domain.user.repository.UserRepository;
-import com.example.santa.domain.userchallenge.entity.UserChallenge;
-import com.example.santa.domain.userchallenge.repository.UserChallengeRepository;
 import com.example.santa.domain.userchallenge.service.UserChallengeService;
 import com.example.santa.domain.usermountain.dto.UserMountainResponseDto;
 import com.example.santa.domain.usermountain.dto.UserMountainVerifyRequestDto;
@@ -69,7 +64,7 @@ public class UserMountainServiceImpl implements UserMountainService {
         if (optionalMountain.isPresent()) {
             Mountain mountain = optionalMountain.get();
 
-            // 여기서 검증 로직 추가
+            // 검증 로직
             Optional<UserMountain> existingRecord = userMountainRepository.findByUserAndMountainAndClimbDate(
                     user, mountain, userMountainVerifyRequestDto.getClimbDate());
             if (existingRecord.isPresent()) {
@@ -99,49 +94,3 @@ public class UserMountainServiceImpl implements UserMountainService {
     }
 
 }
-//    @Override
-//    @Transactional
-//    public UserMountainResponseDto verifyAndCreateUserMountain(double latitude, double longitude, LocalDate climbDate, String email) {
-//        /*
-//        public UserMountainResponseDto verifyAndCreateUserMountain1(UserMountainVerifyRequestDto userMountainVerifyRequestDto,String email) 생성을 할때
-//        이런식으로 RequestDto를 던져주면 생성이 되지않습니다.
-//*/
-//        User user = userRepository.findByEmail(email)
-//                .orElseThrow(() -> new ServiceLogicException(ExceptionCode.USER_NOT_FOUND));
-//        Category category = categoryRepository.findByName("기타")
-//                .orElseThrow(() -> new ServiceLogicException(ExceptionCode.OTHER_CATEGORY_CATEGORY_NOT_FOUND));
-//
-//        double distance = 5;
-//        Optional<Mountain> optionalMountain = mountainRepository.findMountainsWithinDistance(
-//                latitude, longitude, distance);
-//        if (optionalMountain.isPresent()) {
-//            Mountain mountain = optionalMountain.get();
-//
-//            Optional<UserMountain> existingRecord = userMountainRepository.findByUserAndMountainAndClimbDate(
-//                    user, mountain, climbDate);
-//            if (existingRecord.isPresent()) {
-//                throw new ServiceLogicException(ExceptionCode.ALREADY_USERMOUNTAIN_ON_DATE);
-//            }
-//
-//            UserMountain userMountain = userMountainRepository.save(UserMountain.builder()
-//                    .latitude(latitude)
-//                    .longitude(longitude)
-//                    .climbDate(climbDate)
-//                    .mountain(mountain)
-//                    .user(user)
-//                    .category(category) //기타 카테고리 고정
-//                    .build());
-//
-//            double newAccumulatedHeight = user.getAccumulatedHeight() + mountain.getHeight();
-//            user.setAccumulatedHeight(newAccumulatedHeight);
-//            userRepository.save(user);
-//
-//            // UserChallenge 생성 후 호출
-//            userChallengeService.updateProgress(user.getEmail(), userMountain.getId());
-//
-//            return userMountainResponseDtoMapper.toDto(userMountain);
-//            // UserChallenge 진행 상태 업데이트
-//        } else {
-//            throw new ServiceLogicException(ExceptionCode.INVALID_USER_LOCATION);
-//        }
-//    }

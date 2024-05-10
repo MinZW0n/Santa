@@ -20,7 +20,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.List;
 import java.util.Objects;
 
 @Service
@@ -33,15 +32,12 @@ public class ChallengeServiceImpl implements ChallengeService{
 
     private final CategoryRepository categoryRepository;
 
-    private final UserChallengeRepository userChallengeRepository;
-
     private final S3ImageService s3ImageService;
 
     @Autowired
-    public ChallengeServiceImpl(ChallengeRepository challengeRepository, CategoryRepository categoryRepository, UserChallengeRepository userChallengeRepository, ChallengeResponseMapper challengeResponseMapper,  S3ImageService s3ImageService) {
+    public ChallengeServiceImpl(ChallengeRepository challengeRepository, CategoryRepository categoryRepository,ChallengeResponseMapper challengeResponseMapper,  S3ImageService s3ImageService) {
         this.challengeRepository = challengeRepository;
         this.categoryRepository = categoryRepository;
-        this.userChallengeRepository =userChallengeRepository;
         this.challengeResponseMapper = challengeResponseMapper;
         this.s3ImageService = s3ImageService;
     }
@@ -85,15 +81,6 @@ public class ChallengeServiceImpl implements ChallengeService{
                 .map(challengeResponseMapper::toDto)
                 .orElse(null);
     }
-
-//    @Override
-//    @Transactional(readOnly = true)
-//    public List<ChallengeParticipationResponseDto> getUsersParticipationInChallenges() {
-////        List<ChallengeParticipationResponseDto> challengeParticipations = userChallengeRepository.countUsersPerChallenge()
-////                .
-////        ChallengeParticipationResponseDto challengeParticipations = userChallengeRepository.countUsersPerChallenge();
-//        return userChallengeRepository.countUsersPerChallenge();
-//    }
 
 
     @Override

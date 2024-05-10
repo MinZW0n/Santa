@@ -32,11 +32,13 @@ class CategoryServiceImplTest {
         category = new Category();
         category.setId(1L);
         category.setName("등산");
+        when(categoryRepository.findByName("등산")).thenReturn(Optional.empty());
+
     }
 
     @Test
     void createCategory_Success() {
-        when(categoryRepository.findByName("등산")).thenReturn(Optional.empty());
+//        when(categoryRepository.findByName("등산")).thenReturn(Optional.empty());
         when(categoryRepository.save(any(Category.class))).thenReturn(category);
 
         Category result = categoryService.createCategory("등산");
@@ -46,7 +48,7 @@ class CategoryServiceImplTest {
 
     @Test
     void createCategory_ThrowsExceptionIfCategoryExists() {
-        when(categoryRepository.findByName("등산")).thenReturn(Optional.of(category));
+//        when(categoryRepository.findByName("등산")).thenReturn(Optional.of(category));
 
         Exception exception = assertThrows(ServiceLogicException.class, () ->
                 categoryService.createCategory("등산")
@@ -66,13 +68,13 @@ class CategoryServiceImplTest {
 
     @Test
     void updateCategory_Success() {
-        when(categoryRepository.findByName("등산")).thenReturn(Optional.empty());
+        lenient().when(categoryRepository.findByName("등산")).thenReturn(Optional.empty());
         when(categoryRepository.findById(1L)).thenReturn(Optional.of(category));
         when(categoryRepository.save(any(Category.class))).thenReturn(category);
 
-        Category result = categoryService.updateCategory(1L, "등산");
+        Category result = categoryService.updateCategory(1L, "산등");
         assertNotNull(result);
-        assertEquals("등산", result.getName());
+        assertEquals("산등", result.getName());
     }
 
     @Test

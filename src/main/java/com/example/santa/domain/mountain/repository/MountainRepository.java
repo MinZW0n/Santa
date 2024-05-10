@@ -1,6 +1,5 @@
 package com.example.santa.domain.mountain.repository;
 
-import com.example.santa.domain.mountain.dto.MountainResponseDto;
 import com.example.santa.domain.mountain.entity.Mountain;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

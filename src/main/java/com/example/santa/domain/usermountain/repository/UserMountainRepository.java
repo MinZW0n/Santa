@@ -10,6 +10,4 @@ import java.util.Optional;
 
 public interface UserMountainRepository extends JpaRepository<UserMountain, Long> {
     Optional<UserMountain> findByUserAndMountainAndClimbDate(User user, Mountain mountain, LocalDate climbDate);
-    Optional<UserMountain> findByCategoryName(String categoryName);
-
 }
