@@ -32,7 +32,6 @@ class CategoryServiceImplTest {
         category = new Category();
         category.setId(1L);
         category.setName("등산");
-        when(categoryRepository.findByName("등산")).thenReturn(Optional.empty());
 
     }
 
@@ -48,7 +47,7 @@ class CategoryServiceImplTest {
 
     @Test
     void createCategory_ThrowsExceptionIfCategoryExists() {
-//        when(categoryRepository.findByName("등산")).thenReturn(Optional.of(category));
+        when(categoryRepository.findByName("등산")).thenReturn(Optional.of(category));
 
         Exception exception = assertThrows(ServiceLogicException.class, () ->
                 categoryService.createCategory("등산")
