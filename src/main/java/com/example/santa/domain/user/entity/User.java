@@ -9,7 +9,10 @@ import com.example.santa.domain.report.entity.Report;
 import com.example.santa.domain.userchallenge.entity.UserChallenge;
 import com.example.santa.domain.usermountain.entity.UserMountain;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -89,12 +92,11 @@ public class User extends BaseEntity implements UserDetails {
         this.accumulatedHeight = accumulatedHeight;
     }
 
-    public User update(String nickname, String phoneNumber, String name, String image, Role role) {
+    public User update(String nickname, String phoneNumber, String name, String image) {
         this.nickname = nickname;
         this.phoneNumber = phoneNumber;
         this.name = name;
         this.image = image;
-        this.role = role;
         return this;
     }
 

@@ -1,6 +1,5 @@
 package com.example.santa.domain.user.controller;
 
-import com.example.santa.domain.challege.dto.ChallengeResponseDto;
 import com.example.santa.domain.mail.dto.EmailCheckDto;
 import com.example.santa.domain.mail.dto.EmailRequestDto;
 import com.example.santa.domain.mail.service.EmailSendService;
@@ -82,12 +81,11 @@ public class UserController {
     @PostMapping("/verify-email")
     @Operation(summary = "이메일 인증", description = "이메일 인증")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description = "성공", content = @Content(schema = @Schema(implementation = String.class)))})
+            @ApiResponse(responseCode = "201", description = "성공", content = @Content(schema = @Schema(implementation = Boolean.class)))})
     public ResponseEntity<Boolean> verifyEmail(@RequestBody @Valid EmailCheckDto emailCheckDto) {
         Boolean verifyEmail = emailSendService.verifyEmail(emailCheckDto.getAuthNumber(), emailCheckDto.getEmail());
         return ResponseEntity.status(HttpStatus.OK).body(verifyEmail);
     }
-
 
     @PostMapping("/sign-in")
     @Operation(summary = "로그인", description = "로그인")
@@ -106,11 +104,6 @@ public class UserController {
         String token = userService.generateAccessToken(refreshToken.getRefreshToken());
         return ResponseEntity.status(HttpStatus.CREATED).body(token);
     }
-
-//    @GetMapping("/check-token")
-//    public String checkToken(@AuthenticationPrincipal UserDetails userDetails) {
-//        return userDetails.getUsername();
-//    }
 
     @GetMapping("/my-info")
     @Operation(summary = "마이페이지", description = "마이페이지")
@@ -140,20 +133,6 @@ public class UserController {
         userService.deleteUserFromAdmin(id);
         return ResponseEntity.ok().build();
     }
-
-//    @GetMapping("")
-//    @Operation(summary = "관리자 회원 조회", description = "관리자 회원조회")
-//    @PreAuthorize("hasAuthority('ADMIN')")
-//    @ApiResponses(value = {
-//            @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = UserResponseDto.class))),
-//            @ApiResponse(responseCode = "500", description = "에러", content = @Content(schema = @Schema(implementation = UserResponseDto.class)))})
-//    public ResponseEntity<Page<UserResponseDto>> findAllUser(
-//            @RequestParam(required = false) String search
-//            , @RequestParam(name = "size", defaultValue = "5") Integer size
-//            , @RequestParam(name = "page", defaultValue = "0") Integer page) {
-//        Page<UserResponseDto> allUser = userService.findAllUser(search, PageRequest.of(page, size));
-//        return ResponseEntity.status(HttpStatus.OK).body(allUser);
-//    }
 
     @GetMapping("")
     @Operation(summary = "관리자 회원 조회(신고포함)", description = "관리자 회원조회(신고포함)")
@@ -209,18 +188,6 @@ public class UserController {
         return ResponseEntity.ok(allUserMountains);
     }
 
-//    @PostMapping("/preferred-categories/test")
-//    @Operation(summary = "선호카테고리 생성", description = "선호카테고리 생성")
-//    @ApiResponses(value = {
-//            @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = Long.class))),
-//            @ApiResponse(responseCode = "500", description = "에러", content = @Content(schema = @Schema(implementation = Long.class)))})
-//    public ResponseEntity<Long> savePreferredCategory(@AuthenticationPrincipal String email, @RequestBody @Valid PreferredCategoryRequestDto preferredCategoryRequestDto) {
-//        log.info("preferredCategoryRequestDto.getCategoryId() {}",preferredCategoryRequestDto.getCategoryId() );
-//        log.info("email {}", email);
-//        Long saved = userService.savePreferredCategory(email, preferredCategoryRequestDto);
-//        return ResponseEntity.status(HttpStatus.CREATED).body(saved);
-//    }
-
     @Transactional
     @PostMapping("/preferred-categories")
     @Operation(summary = "선호카테고리 생성", description = "선호카테고리 생성")
@@ -232,6 +199,7 @@ public class UserController {
         List<Long> longList = userService.savePreferredCategories(email, categoriesRequestDto.getCategoryIds());
         return ResponseEntity.status(HttpStatus.CREATED).body(longList);
     }
+
     @GetMapping("/preferred-categories")
     @Operation(summary = "선호카테고리 전체조회", description = "선호카테고리 전체조회")
     @ApiResponses(value = {
@@ -261,6 +229,5 @@ public class UserController {
         RankingResponseDto rankingDto = userService.getIndividualRanking(email);
         return ResponseEntity.ok(rankingDto);
     }
-
 
 }

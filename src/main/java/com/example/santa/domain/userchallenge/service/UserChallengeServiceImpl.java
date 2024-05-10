@@ -28,10 +28,7 @@ public class UserChallengeServiceImpl implements UserChallengeService{
     private final UserChallengeRepository userChallengeRepository;
     private final ChallengeRepository challengeRepository;
     private final UserMountainRepository userMountainRepository;
-
     private final MeetingRepository meetingRepository;
-    private final CategoryRepository categoryRepository;
-
     private final UserRepository userRepository;
 
     @Autowired
@@ -43,7 +40,6 @@ public class UserChallengeServiceImpl implements UserChallengeService{
             ,MeetingRepository meetingRepository){
         this.userChallengeRepository = userChallengeRepository;
         this.challengeRepository =challengeRepository;
-        this.categoryRepository = categoryRepository;
         this.meetingRepository = meetingRepository;
         this.userMountainRepository = userMountainRepository;
         this.userRepository = userRepository;

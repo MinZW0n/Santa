@@ -43,8 +43,7 @@ public class MeetingController {
     @PreAuthorize("hasAuthority('USER') OR hasAuthority('ADMIN')")
     @PostMapping
     public ResponseEntity<MeetingResponseDto> createMeeting(@AuthenticationPrincipal String email, @ModelAttribute @Valid MeetingDto meetingDto){
-        meetingDto.setUserEmail(email);
-        return ResponseEntity.ok(meetingService.createMeeting(meetingDto));
+        return ResponseEntity.ok(meetingService.createMeeting(email, meetingDto));
     }
 
     @Operation(summary = "모임 조회 기능", description = "모임 id 조회")
@@ -81,11 +80,6 @@ public class MeetingController {
         return ResponseEntity.ok(meetingService.getAllMeetings(pageRequest));
     }
 
-//    @GetMapping
-//    public ResponseEntity<?> getAllMeetings(@RequestParam(name = "lastId", required = false) Long lastId,
-//                                            @RequestParam(name = "size", defaultValue = "5") int size) {
-//        return ResponseEntity.ok(meetingService.getAllMeetingsNoOffset(lastId, size));
-//    }
 
     @Operation(summary = "모임 수정 기능(모임장)", description = "모임 수정")
     @ApiResponses(value = {
@@ -125,16 +119,7 @@ public class MeetingController {
         }
     }
 
-//    @GetMapping("/tag-search")
-//    public ResponseEntity<?> getMeetingsByTag(@RequestParam(name = "tag") String tagName,
-//                                              @RequestParam(name = "lastId", required = false) Long lastId,
-//                                              @RequestParam(name = "size", defaultValue = "5") int size) {
-//        if (tagName != null) {
-//            return ResponseEntity.ok(meetingService.getMeetingsByTagNameNoOffset(tagName, lastId, size));
-//        }
-//        return ResponseEntity.badRequest().build();
-//
-//    }
+
 
     @Operation(summary = "모임 검색 기능(카테고리)", description = "모임 카테고리 검색")
     @ApiResponses(value = {
@@ -142,22 +127,14 @@ public class MeetingController {
     })
     @GetMapping("/category-search")
     public ResponseEntity<Page<MeetingResponseDto>> getMeetingsByCategoryName(@RequestParam(name = "category") String category,
+                                                                              @AuthenticationPrincipal String email,
                                                               @RequestParam(name = "page", defaultValue = "0") int page,
                                                               @RequestParam(name = "size", defaultValue = "5") int size) {
         PageRequest pageRequest = PageRequest.of(page, size, Sort.by("id").descending());
-        return ResponseEntity.ok(meetingService.getMeetingsByCategoryName(category,pageRequest));
+        return ResponseEntity.ok(meetingService.getMeetingsByCategoryName(email,category,pageRequest));
     }
 
-//    @GetMapping("/category-search")
-//    public ResponseEntity<?> getMeetingsByCategoryName(@RequestParam(name = "category") String category,
-//                                                       @RequestParam(name = "lastId", required = false) Long lastId,
-//                                                       @RequestParam(name = "size", defaultValue = "5") int size) {
-//        if (category != null) {
-//            return ResponseEntity.ok(meetingService.getMeetingsByCategoryNameNoOffset(category, lastId, size));
-//        }
-//        return ResponseEntity.badRequest().build();
-//
-//    }
+
 
     @Operation(summary = "모임 조회 기능", description = "모임 인기도순 조회")
     @ApiResponses(value = {
@@ -170,11 +147,6 @@ public class MeetingController {
         return ResponseEntity.ok(meetingService.getAllMeetingsByParticipantCount(pageRequest));
     }
 
-//    @GetMapping("/participants")
-//    public ResponseEntity<?> getAllMeetingsByParticipantCount(@RequestParam(name = "lastId", required = false) Long lastId,
-//                                                              @RequestParam(name = "size", defaultValue = "5") int size) {
-//        return ResponseEntity.ok(meetingService.getAllMeetingsByParticipantCountNoOffset(lastId, size));
-//    }
 
     @Operation(summary = "모임 조회 기능", description = "내가 참여중인 모임 조회")
     @ApiResponses(value = {
@@ -188,12 +160,6 @@ public class MeetingController {
         return ResponseEntity.ok(meetingService.getMyMeetings(email,pageRequest));
     }
 
-//    @GetMapping("/my-meetings")
-//    public ResponseEntity<?> getMyMeetings(@AuthenticationPrincipal String email,
-//                                           @RequestParam(name = "lastId", required = false) Long lastId,
-//                                           @RequestParam(name = "size", defaultValue = "10") int size) {
-//        return ResponseEntity.ok(meetingService.getMyMeetingsNoOffset(lastId, size, email));
-//    }
 
     @Operation(summary = "모임 종료 기능(모임장)", description = "모임 종료")
     @ApiResponses(value = {

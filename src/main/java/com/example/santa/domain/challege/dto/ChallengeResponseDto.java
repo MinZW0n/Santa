@@ -1,7 +1,5 @@
 package com.example.santa.domain.challege.dto;
 
-import com.example.santa.domain.category.dto.CreateDto;
-import com.example.santa.domain.mountain.dto.UserClimbMountainResponseDto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 

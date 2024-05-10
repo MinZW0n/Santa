@@ -3,7 +3,9 @@ package com.example.santa.domain.user.oauth2;
 import com.example.santa.domain.user.entity.SocialType;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.*;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -51,14 +53,8 @@ public class KakaoClient implements OauthClient {
         HttpEntity<MultiValueMap<String, String>> tokenRequest = new HttpEntity(body, headers);
         // 토큰 수신
         KakaoToken kakaoToken = rt.postForObject(url, tokenRequest, KakaoToken.class);
-//        ResponseEntity<KakaoToken> kakaoToken = rt.exchange(url, HttpMethod.POST, tokenRequest, KakaoToken.class);
 
         return kakaoToken.getAccessToken();
-//        if (kakaoToken.getStatusCode() == HttpStatus.OK) {
-//            return kakaoToken.getBody().getAccessToken();
-//        } else {
-//            throw new RuntimeException("Failed to retrieve access token");
-//        }
     }
 
     @Override

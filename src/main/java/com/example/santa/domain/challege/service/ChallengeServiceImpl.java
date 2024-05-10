@@ -5,7 +5,6 @@ import com.example.santa.domain.category.repository.CategoryRepository;
 import com.example.santa.domain.challege.dto.ChallengeCreateDto;
 import com.example.santa.domain.challege.dto.ChallengeResponseDto;
 import com.example.santa.domain.challege.entity.Challenge;
-import com.example.santa.domain.userchallenge.repository.UserChallengeRepository;
 import com.example.santa.global.constant.Constants;
 import com.example.santa.global.exception.ExceptionCode;
 import com.example.santa.global.exception.ServiceLogicException;

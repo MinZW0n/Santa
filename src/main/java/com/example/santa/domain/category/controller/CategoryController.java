@@ -3,7 +3,6 @@ package com.example.santa.domain.category.controller;
 import com.example.santa.domain.category.dto.CreateDto;
 import com.example.santa.domain.category.entity.Category;
 import com.example.santa.domain.category.service.CategoryService;
-import com.example.santa.domain.challege.dto.ChallengeResponseDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;

@@ -44,8 +44,6 @@ public class UserMountainServiceImplTest {
     private CategoryRepository categoryRepository;
     @Mock
     private UserMountainResponseDtoMapper userMountainResponseDtoMapper;
-    @Mock
-    private UserChallengeService userChallengeService;
 
     @InjectMocks
     private UserMountainServiceImpl userMountainService;
@@ -55,7 +53,6 @@ public class UserMountainServiceImplTest {
     private Category category;
     private UserMountain userMountain;
     private UserMountainResponseDto responseDto;
-    private UserClimbMountainResponseDto userClimbMountainResponseDto;
     private UserMountainVerifyRequestDto requestDto;
 
     @BeforeEach
@@ -115,11 +112,6 @@ public class UserMountainServiceImplTest {
         assertEquals(result.getClimbDate(), requestDto.getClimbDate());
         assertEquals(responseDto, result);
 
-//        assertAll(
-//                () -> assertNotNull(study),
-//                () -> assertEquals(StudyStatus.DRAFT, study.getStatus(), “스터디를 처음 만들면 상태값이 DRAFT여야 한다.”),
-//                () -> assertTrue(study.getLimit() > 0, “스터디 참석 가능 인원은 0보다 커야 한다.”)
-//        );
     }
 
     @Test
@@ -152,8 +144,6 @@ public class UserMountainServiceImplTest {
     @Test
     void verifyAndCreateUserMountain_WhenCategoryDoesNotExist_ShouldThrowException() {
         when(userRepository.findByEmail(any())).thenReturn(Optional.of(user));
-//        when(mountainRepository.findMountainsWithinDistance(any(Double.class), any(Double.class), any(Double.class)))
-//                .thenReturn(Optional.of(mountain));
         when(categoryRepository.findByName("기타")).thenReturn(Optional.empty());
 
         Exception exception = assertThrows(ServiceLogicException.class, () -> {

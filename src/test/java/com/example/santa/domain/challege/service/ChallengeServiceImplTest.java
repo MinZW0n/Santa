@@ -1,7 +1,6 @@
 package com.example.santa.domain.challege.service;
 
 import static org.mockito.Mockito.*;
-import static org.mockito.BDDMockito.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 import com.example.santa.domain.category.entity.Category;
@@ -10,7 +9,6 @@ import com.example.santa.domain.challege.dto.ChallengeCreateDto;
 import com.example.santa.domain.challege.dto.ChallengeResponseDto;
 import com.example.santa.domain.challege.entity.Challenge;
 import com.example.santa.domain.challege.repository.ChallengeRepository;
-import com.example.santa.domain.report.entity.Report;
 import com.example.santa.domain.userchallenge.repository.UserChallengeRepository;
 import com.example.santa.global.exception.ServiceLogicException;
 import com.example.santa.global.util.S3ImageService;
@@ -91,26 +89,15 @@ public class ChallengeServiceImplTest {
 
     @Test
     public void testSaveChallenge_WithDefaultImage() {
-        // Setup the specific test scenario
         challengeCreateDto.setImageFile(null);
 
-        // Mock the behavior of categoryRepository.findById() to return a valid Category object
         when(categoryRepository.findById(anyLong())).thenReturn(Optional.of(category));
-
         when(challengeRepository.save(any(Challenge.class))).thenReturn(challenge);
-        // Mock the behavior of challengeResponseMapper.toDto() to return a valid ChallengeResponseDto object
         when(challengeResponseMapper.toDto(challenge)).thenReturn(challengeResponseDto);
-
-        // Call the method under test
         ChallengeResponseDto result = challengeService.saveChallenge(challengeCreateDto);
 
-//    // Assert that the result is not null
         assertNotNull(result);
-
-        // Assert that the result matches the expected challengeResponseDto
         assertEquals(challengeResponseDto, result);
-
-        // Verify that the upload method of s3ImageService is never called
         verify(s3ImageService, never()).upload(any());
     }
 
@@ -118,7 +105,6 @@ public class ChallengeServiceImplTest {
     public void testSaveChallenge_WithNewImage() {
         MultipartFile imageFile = new MockMultipartFile("file", "test.png", "image/png", "test image content".getBytes());
         challengeCreateDto.setImageFile(imageFile);
-        //추가
         when(categoryRepository.findById(anyLong())).thenReturn(Optional.of(category));
         when(s3ImageService.upload(any(MultipartFile.class))).thenReturn("uploaded-image-url");
         when(challengeRepository.save(any(Challenge.class))).thenReturn(challenge);
@@ -158,7 +144,6 @@ public class ChallengeServiceImplTest {
 
     @Test
     public void testDeleteChallenge() {
-        // This method might not necessarily need a return value check if it's void
         challengeService.deleteChallenge(1L);
         verify(challengeRepository).deleteById(1L);
     }

@@ -83,18 +83,3 @@ public class ChallengeController {
 }
 
 
-//    // 모든 챌린지 조회
-//    @Operation(summary = "챌린지 조회 기능", description = "전체 챌린지 조회")
-//    @ApiResponses(value = {
-//            @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation =ChallengeResponseDto.class))),
-//            @ApiResponse(responseCode = "500", description = "에러", content = @Content(schema = @Schema(implementation = ChallengeResponseDto.class)))})
-////    @GetMapping
-////    public ResponseEntity<List<Challenge>> getAllChallenges() {
-////        List<Challenge> challenges = challengeService.findAllChallenges();
-////        return ResponseEntity.ok(challenges);
-////    }
-//    @GetMapping
-//    public ResponseEntity<List<ChallengeResponseDto>> getAllChallenges() {
-//        List<ChallengeResponseDto> challengeDtos = challengeService.findAllChallenges();
-//        return ResponseEntity.ok(challengeDtos);
-//    }

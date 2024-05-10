@@ -6,7 +6,6 @@ import com.example.santa.domain.report.entity.Report;
 import com.example.santa.domain.report.repository.ReportRepository;
 import com.example.santa.domain.user.entity.User;
 import com.example.santa.domain.user.repository.UserRepository;
-import com.example.santa.global.exception.ExceptionCode;
 import com.example.santa.global.exception.ServiceLogicException;
 import com.example.santa.global.util.mapsturct.ReportResponseDtoMapper;
 import static org.mockito.Mockito.*;
@@ -25,8 +24,6 @@ import org.springframework.data.domain.PageRequest;
 import java.util.Arrays;
 import java.util.Optional;
 
-import java.util.Arrays;
-import java.util.Optional;
 
 public class ReportServiceImplTest {
 
@@ -52,13 +49,11 @@ public class ReportServiceImplTest {
     void setUp() {
         MockitoAnnotations.openMocks(this);
 
-        // Mock user details
         reporter = new User();
         reporter.setEmail("reporter@example.com");
         reportedParticipant = new User();
         reportedParticipant.setId(1L);
 
-        // Mock report details
         report = new Report();
         report.setReporter(reporter);
         report.setReportedParticipant(reportedParticipant);

@@ -11,11 +11,8 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.annotation.web.configurers.RequestCacheConfigurer;
-import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 @Slf4j
 @Configuration
@@ -64,10 +61,6 @@ public class SecurityConfig {
                                 .anyRequest().authenticated()
 //                                .anyRequest().permitAll()
                 )
-//                .oauth2Login(oauth2 -> oauth2
-//                        .redirectionEndpoint(endpoint -> endpoint.baseUri("/login/oauth2/code/**"))
-//                        .userInfoEndpoint(endpoint -> endpoint.userService(oAuth2UserService))
-//                )
                 // REST api -> basic, csrf 사용 x
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .csrf(AbstractHttpConfigurer::disable)

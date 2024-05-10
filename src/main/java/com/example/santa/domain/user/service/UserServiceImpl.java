@@ -17,7 +17,6 @@ import com.example.santa.domain.user.entity.Role;
 import com.example.santa.domain.user.entity.User;
 import com.example.santa.domain.user.repository.UserRepository;
 import com.example.santa.domain.userchallenge.dto.UserChallengeCompletionResponseDto;
-import com.example.santa.domain.userchallenge.repository.UserChallengeRepository;
 import com.example.santa.domain.usermountain.dto.UserMountainResponseDto;
 import com.example.santa.global.constant.Constants;
 import com.example.santa.global.exception.ExceptionCode;
@@ -57,13 +56,9 @@ public class UserServiceImpl implements UserService {
     private final RankingRepository rankingRepository;
     private final S3ImageService s3ImageService;
     private final ReportRepository reportRepository;
-
     private final UserMountainResponseDtoMapper userMountainResponseDtoMapper;
     private final PreferredCategoryResponseDtoMapper preferredCategoryResponseDtoMapper;
     private final UserChallengeCompletionResponseMapper userChallengeCompletionResponseMapperResponseMapper;
-
-
-    private final UserChallengeRepository userChallengeRepository;
 
     @Transactional
     @Override
@@ -170,8 +165,7 @@ public class UserServiceImpl implements UserService {
                 .update(userUpdateRequestDto.getNickname()
                         , userUpdateRequestDto.getPhoneNumber()
                         , userUpdateRequestDto.getName()
-                        , imageUrl
-                        , Role.USER);
+                        , imageUrl);
 
         return userResponseDtoMapper.toDto(user);
     }
@@ -214,7 +208,6 @@ public class UserServiceImpl implements UserService {
         return pageDto;
     }
 
-
     @Override
     public Page<UserChallengeCompletionResponseDto> findChallengesByCompletion(String email, boolean completion, Pageable pageable) {
         User byEmail = userRepository.findByEmail(email)
@@ -245,8 +238,7 @@ public class UserServiceImpl implements UserService {
         // 사용자의 랭킹 정보가 없을 경우 예외 처리나 null 반환 등의 로직이 필요
         throw new RuntimeException("User ranking not found");
     }
-
-
+    @Transactional
     @Override
     public String resetPassword(String email, String newPassword) {
         User user = userRepository.findByEmail(email)
@@ -274,27 +266,6 @@ public class UserServiceImpl implements UserService {
     public List<Long> savePreferredCategories(String email, List<Long> categoryIds) {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new ServiceLogicException(ExceptionCode.USER_NOT_FOUND));
-
-//        List<Long> createdPreferredCategories = new ArrayList<>();
-
-//        for (Long categoryId : categoryIds) {
-//            Category category = categoryRepository.findById(categoryId)
-//                    .orElseThrow(() -> new ServiceLogicException(ExceptionCode.CATEGORY_NOT_FOUND));
-//            PreferredCategory preferredCategory = PreferredCategory.builder()
-//                    .user(user)
-//                    .category(category)
-//                    .build();
-//            PreferredCategory saved = preferredCategoryRepository.save(preferredCategory);
-//            createdPreferredCategories.add(saved.getId());
-//        }
-
-//        categoryIds.forEach((id) -> {
-//            PreferredCategory save = preferredCategoryRepository.save(PreferredCategory.builder()
-//                    .user(user)
-//                    .category(categoryRepository.findById(id).orElseThrow(() -> new ServiceLogicException(ExceptionCode.CATEGORY_NOT_FOUND)))
-//                    .build());
-//            createdPreferredCategories.add(save.getId());
-//        });
         List<Long> createdPreferredCategories =
                 categoryIds.stream().map((id) ->
                         preferredCategoryRepository.save(
@@ -324,13 +295,3 @@ public class UserServiceImpl implements UserService {
         preferredCategoryRepository.deleteAll(allByUserId);
     }
 }
-
-
-//    @Override
-//    public Page<UserChallengeCompletionResponseDto> findCompletedChallenges(String email,Pageable pageable) {
-//        User byEmail = userRepository.findByEmail(email)
-//                .orElseThrow(() -> new ServiceLogicException(ExceptionCode.USER_NOT_FOUND));
-//        Page<UserChallengeCompletionResponseDto> completionDto = userRepository.findByUserIdAndIsCompletedTrue(byEmail.getId(),pageable)
-//                .map(userChallengeCompletionResponseMapperResponseMapper::toDto);
-//        return completionDto;
-//    }

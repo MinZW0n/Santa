@@ -1,12 +1,7 @@
 package com.example.santa.domain.rank.service;
 
 import static org.junit.jupiter.api.Assertions.*;
-
 import static org.mockito.Mockito.*;
-import static org.junit.jupiter.api.Assertions.*;
-
-import static org.mockito.BDDMockito.*;
-
 import com.example.santa.domain.rank.dto.RankingResponseDto;
 import com.example.santa.domain.rank.entity.Ranking;
 import com.example.santa.domain.rank.repository.RankingRepository;

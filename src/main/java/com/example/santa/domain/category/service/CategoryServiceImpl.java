@@ -4,7 +4,6 @@ import com.example.santa.domain.category.entity.Category;
 import com.example.santa.domain.category.repository.CategoryRepository;
 import com.example.santa.global.exception.ExceptionCode;
 import com.example.santa.global.exception.ServiceLogicException;
-import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

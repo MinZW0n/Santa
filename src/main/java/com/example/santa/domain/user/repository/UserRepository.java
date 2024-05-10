@@ -36,9 +36,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
     @Query("SELECT uc FROM UserChallenges uc WHERE uc.user.id = :userid AND uc.isCompleted IS NULL")
     Page<UserChallenge> findByUserIdAndIsCompletedNull(Long userid,Pageable pageable);
 
-    Optional<User> findBySocialTypeAndSocialId(SocialType socialType, String socialId);
-
-    //    Page<User> findAllByNameContainingAndNicknameContaining (String name, String nickname, Pageable pageable);
     Page<User> findAllByNameContainingOrNicknameContaining (String name, String nickname, Pageable pageable);
 
     @Query("SELECT new com.example.santa.domain.user.dto.UserReportResponseDto(u.id, u.email, u.nickname, u.name, COUNT(r)) FROM User u LEFT JOIN Report r ON u = r.reportedParticipant WHERE (:search IS NULL OR u.name LIKE %:search% OR u.nickname LIKE %:search%) GROUP BY u.id, u.email, u.nickname, u.name")

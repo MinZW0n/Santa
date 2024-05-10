@@ -46,14 +46,3 @@ public class RankingController {
         return ResponseEntity.ok(response);
     }
 }
-
-//    @Operation(summary = "랭킹 조회 기능", description = "랭킹 조회 기능")
-//    @ApiResponses(value = {
-//            @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = ChallengeResponseDto.class))),
-//            @ApiResponse(responseCode = "500", description = "에러", content = @Content(schema = @Schema(implementation = ChallengeResponseDto.class)))})
-//    @GetMapping
-//    public ResponseEntity<Page<RankingResponseDto>> getAllRanksDto(@RequestParam(defaultValue = "0") int page,
-//                                                                   @RequestParam(defaultValue = "10") int size) {
-//        Page<RankingResponseDto> rankingPage = rankingService.getRankingOrderedByScore(PageRequest.of(page, size, Sort.by("score").descending()));
-//        return ResponseEntity.ok(rankingPage);
-//    }

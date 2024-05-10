@@ -1,6 +1,5 @@
 package com.example.santa.domain.report.controller;
 
-import com.example.santa.domain.meeting.dto.MeetingResponseDto;
 import com.example.santa.domain.report.dto.ReportRequestDto;
 import com.example.santa.domain.report.dto.ReportResponseDto;
 import com.example.santa.domain.report.service.ReportService;

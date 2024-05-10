@@ -1,6 +1,5 @@
 package com.example.santa.domain.user.oauth2;
 
-import com.example.santa.domain.user.entity.Password;
 import com.example.santa.domain.user.entity.Role;
 import com.example.santa.domain.user.entity.User;
 import com.example.santa.domain.user.repository.UserRepository;

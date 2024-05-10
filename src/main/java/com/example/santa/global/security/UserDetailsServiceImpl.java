@@ -22,11 +22,6 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
         User user = userRepository.findByEmail(username)
                 .orElseThrow(() -> new UsernameNotFoundException("존재하지 않는 사용자 입니다."));
-//        UserDetails userDetails = org.springframework.security.core.userdetails.User.builder()
-//                .username(user.getEmail())
-//                .password(user.getPassword())
-//                .roles(user.getRole().name())
-//                .build();
         log.info("login - user : {}", user);
         return user;
     }

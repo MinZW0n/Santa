@@ -6,7 +6,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -18,6 +17,4 @@ public interface UserChallengeRepository extends JpaRepository<UserChallenge,Lon
    Long countCompletedChallengesByUserEmail(String userEmail);
 
 
-//   @Query("SELECT new com.example.santa.domain.challege.dto.ChallengeParticipationResponseDto(c.challenge.id, COUNT(DISTINCT c.user.id)) FROM UserChallenges c GROUP BY c.challenge.name")
-//   List<ChallengeParticipationResponseDto> countUsersPerChallenge();
 }

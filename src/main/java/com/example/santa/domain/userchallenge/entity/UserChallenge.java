@@ -1,14 +1,11 @@
 package com.example.santa.domain.userchallenge.entity;
 
-import com.example.santa.domain.category.entity.Category;
 import com.example.santa.domain.challege.entity.Challenge;
 import com.example.santa.domain.user.entity.User;
-import com.example.santa.domain.usermountain.entity.UserMountain;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
-import java.util.Date;
 
 @Getter
 @Setter
