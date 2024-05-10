@@ -1,8 +1,6 @@
 package com.example.santa.global.security.jwt;
 
 import com.example.santa.domain.user.entity.User;
-import com.example.santa.global.exception.ExceptionCode;
-import com.example.santa.global.exception.ServiceLogicException;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
@@ -124,13 +122,7 @@ public class JwtTokenProvider {
         Collection<? extends GrantedAuthority> authorities = Arrays.stream(claims.get("auth").toString().split(","))
                 .map(SimpleGrantedAuthority::new)
                 .collect(Collectors.toList());
-//        // test
-//        Collection<? extends GrantedAuthority> authorities = List.of("user").stream()
-//                .map(SimpleGrantedAuthority::new)
-//                .collect(Collectors.toList());
 
-        // UserDetails 객체를 만들어서 Authentication return
-//        UserDetails principal = new User(claims.getSubject(), "", authorities);
         return new UsernamePasswordAuthenticationToken(claims.getSubject(), "", authorities);
     }
 

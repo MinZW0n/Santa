@@ -1,6 +1,5 @@
 package com.example.santa.global.exception;
 
-import com.example.santa.domain.usermountain.entity.UserMountain;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
 

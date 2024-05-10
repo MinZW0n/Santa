@@ -3,10 +3,11 @@ package com.example.santa.global.aop;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
-import org.aspectj.lang.annotation.*;
+import org.aspectj.lang.annotation.AfterReturning;
+import org.aspectj.lang.annotation.Aspect;
+import org.aspectj.lang.annotation.Before;
+import org.aspectj.lang.annotation.Pointcut;
 import org.aspectj.lang.reflect.MethodSignature;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
@@ -26,12 +27,6 @@ public class LogAop {
     @Pointcut("execution(* com.example.santa..*.controller.*.*(..))")
     private void cut() {
     }
-
-    //cut() 메서드가 실행 되는 지점 이전에 before() 메서드 실행
-//    @Before("cut()")
-//    public void before(JoinPoint joinPoint){
-//
-//    }
 
     @Before("cut()")
     public void logBefore(JoinPoint joinPoint) {
